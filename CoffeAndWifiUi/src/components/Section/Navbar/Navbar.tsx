@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { fetchData } from "../../../service/apiService";
 import Logo from "../../../assets/logo.png";
 import "./Navbar.scss";
@@ -30,14 +30,19 @@ const Navbar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <a className="navbar-brand ms-3 fs-3" href="#">
+        <Link className="navbar-brand ms-3 fs-3" to="/">
           <img className="logo-img" src={Logo} />
-        </a>
+        </Link>
         <div className="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <Link className="nav-link ms-4 fs-3" to="/">
                 Home <FontAwesomeIcon icon={faHouse} />
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link ms-4 fs-3" to="/about">
+                About <FontAwesomeIcon icon={faInfoCircle} />
               </Link>
             </li>
           </ul>

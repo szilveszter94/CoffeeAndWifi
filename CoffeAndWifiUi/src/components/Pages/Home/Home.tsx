@@ -1,12 +1,60 @@
 import Navbar from "../../Section/Navbar/Navbar";
 import Footer from "../../Section/Footer/Footer";
+import { importImages } from "../../../utils/imageImport";
+import { useEffect, useState } from "react";
+import { Images } from "../../../utils/imageImport";
+import Loading from "../Loading/Loading";
 import "./Home.scss";
 
 const Home = () => {
+  const [images, setImages] = useState<Images | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      setLoading(true);
+      const response = await importImages(4);
+      setImages(response);
+      setLoading(false);
+    };
+    loadImages();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="main vh-100">
       <Navbar />
-      <div className="content">
+      <div className="home-content">
+        <div className="container mt-5">
+          <div className="text-center">
+            <h1 className="homepage-title mb-4">
+              Discover Your Perfect Work Haven with{" "}
+              <span className="brand-name">{" NetCafé "}</span>!
+            </h1>
+            <h2 className="homepage-subtitle mb-4">
+              Searching for the ideal spot to unleash your productivity while
+              indulging in the finest brews? Look no further.
+            </h2>
+            <h2 className="homepage-subtitle">
+              Gone are the days of aimless wandering in search of a suitable
+              workspace. With our curated collection of cafes, you can now find
+              your ideal sanctuary with just a few clicks.
+            </h2>
+          </div>
+          <div className="row d-flex justify-content-center align-items-center text-center my-5">
+            {images &&
+              images.map((img) => (
+                <div className="col-md-3" key={img}>
+                  <div>
+                    <img className="img-thumbnail my-2" src={img} />
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
       <Footer />
     </div>

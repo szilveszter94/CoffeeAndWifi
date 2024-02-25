@@ -1,5 +1,12 @@
 @import "../../../Style/variables";
 
+footer {
+    background-color: $secondary-bg-color;
+    color: $text-color;
+    padding: 10px;
+    text-align: center;
+  }
+
 .footer-text {
     font-family: $tercier-font;
 }
@@ -9,5 +16,5 @@
 }
 
 .list-inline .list-inline-item a:hover {
-    color: $accent-color;
+    color: $logo-color;
 }

@@ -14,7 +14,9 @@ const Footer = () => {
         <div className="row mt-3">
           <div className="col-md-12">
             <p className="footer-text">
-              &copy; {new Date().getFullYear()} AskMate. All Rights Reserved.
+              &copy; {new Date().getFullYear()}{" "}
+              <span className="brand-name fs-5">{"NetCafé "}</span>. All Rights
+              Reserved.
             </p>
           </div>
           <div className="col-md-12">

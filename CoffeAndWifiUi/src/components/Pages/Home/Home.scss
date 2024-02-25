@@ -1,0 +1,25 @@
+@import "../../../Style/variables";
+
+.home-content {
+    flex: 1;
+    background-image: url("../../../assets/images/bg.jpg") !important;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.homepage-title {
+    color: $text-color;
+}
+
+.homepage-subtitle {
+    color: $text-color;
+    font-family: $tercier-font;
+    font-size: larger;
+}
+
+.brand-name {
+    font-family: $brand-font;
+    color: $logo-color;
+}
