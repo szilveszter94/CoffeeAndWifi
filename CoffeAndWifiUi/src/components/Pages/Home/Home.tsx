@@ -1,20 +1,14 @@
-import { fetchData } from "../../../service/apiService";
-import PrimaryButton from "../../Buttons/PrimaryButton";
-import "./Home.css";
+import Navbar from "../../Section/Navbar/Navbar";
+import Footer from "../../Section/Footer/Footer";
+import "./Home.scss";
 
 const Home = () => {
-  const handleDataFetch = async () => {
-    const response = await fetchData({
-      path: "/Coffee",
-      method: "GET",
-      body: null,
-    });
-    console.log(response);
-  };
-
   return (
     <div className="main vh-100">
-      <PrimaryButton onClick={handleDataFetch} text="Click"></PrimaryButton>
+      <Navbar />
+      <div className="content">
+      </div>
+      <Footer />
     </div>
   );
 };

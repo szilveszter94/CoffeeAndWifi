@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import "./PrimaryButton.css";
+import "./PrimaryButton.scss";
 
 interface buttonProps {
-    text: string;
-    onClick: () => any;
+  text: string;
+  onClick: () => any;
 }
 
-const PrimaryButton = ({text, onClick} : buttonProps) => {
+const PrimaryButton = ({ text, onClick }: buttonProps) => {
   return (
-    <button onClick={onClick}>{text}</button>
-  )
-}
+    <button className="primary-button fs-5" onClick={onClick}>
+      {text}
+    </button>
+  );
+};
 
-export default PrimaryButton
+export default PrimaryButton;

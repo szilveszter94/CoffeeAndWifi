@@ -1,0 +1,34 @@
+@import "./Style/variables";
+
+html,
+body {
+  background-color: $primary-bg-color;
+  font-family: $primary-font;
+  font-weight: 700;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: $primary-bg-color;
+}
+
+.content {
+  flex: 1;
+  background-color: $primary-bg-color;
+}
+
+footer {
+  background-color: $secondary-bg-color;
+  color: $text-color;
+  padding: 10px;
+  text-align: center;
+}

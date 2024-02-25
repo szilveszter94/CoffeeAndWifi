@@ -1,0 +1,13 @@
+@import "../../../Style/variables";
+
+.footer-text {
+    font-family: $tercier-font;
+}
+
+.list-inline .list-inline-item a {
+    color: $text-color;
+}
+
+.list-inline .list-inline-item a:hover {
+    color: $accent-color;
+}

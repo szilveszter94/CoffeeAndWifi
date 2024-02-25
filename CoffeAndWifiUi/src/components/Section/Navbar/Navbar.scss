@@ -1,0 +1,22 @@
+@import "../../../Style/variables";
+
+.navbar-container {
+  background-color: $secondary-bg-color;
+}
+
+.nav-item .nav-link,
+a.navbar-brand {
+  color: $text-color;
+}
+
+a.navbar-brand:hover {
+  color: $text-color;
+}
+
+.nav-item .nav-link:hover {
+  color: $accent-color;
+}
+
+.logo-img {
+  width: 6dvw;
+}
