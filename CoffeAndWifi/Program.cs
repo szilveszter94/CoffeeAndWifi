@@ -1,9 +1,9 @@
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -15,6 +15,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+var connection ="http://localhost:5173/";
+
+app.UseCors(b => {
+    b.WithOrigins(connection!)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .WithExposedHeaders("content-type") // Allow the 'content-type' header to be exposed
+        .SetIsOriginAllowed(_ => true); // Allow any origin for CORS
+});
 
 app.UseHttpsRedirection();
 
