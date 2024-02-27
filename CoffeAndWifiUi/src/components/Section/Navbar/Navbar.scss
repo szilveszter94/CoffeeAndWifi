@@ -5,11 +5,7 @@
 }
 
 .nav-item .nav-link,
-a.navbar-brand {
-  color: $text-color;
-}
-
-a.navbar-brand:hover {
+.nav-item .nav-link:focus {
   color: $text-color;
 }
 

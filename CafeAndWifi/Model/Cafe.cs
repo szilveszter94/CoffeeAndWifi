@@ -4,7 +4,6 @@ public class Cafe : ICafe
 {
     public int Id { get; init; }
     public string Name { get; init; }
-    public string MapUrl { get; init; }
     public double Latitude { get; init; }
     public double Longitude { get; init; }
     public string ImgUrl { get; init; }

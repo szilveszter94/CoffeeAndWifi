@@ -8,7 +8,7 @@ export const generateRatings = () => {
 
 export const generateSeats = () => {
   const ratings = [];
-  for (let i = 0; i < 201; i += 5) {
+  for (let i = 0; i < 501; i += 5) {
     ratings.push(<option>{i}</option>);
   }
   return ratings;

@@ -14,7 +14,6 @@ public class CafeRepository : ICafeRepository
             {
                 Id = 1,
                 Name = "Coffee House",
-                MapUrl = "https://maps.google.com/?q=123+Main+Street",
                 Latitude = 40.7128,
                 Longitude = -74.0060,
                 ImgUrl = "https://garzoncafe.hu/wp-content/uploads/2022/03/GARZON_inside.png",
@@ -43,7 +42,6 @@ public class CafeRepository : ICafeRepository
             {
                 Id = 2,
                 Name = "Latte Lounge",
-                MapUrl = "https://maps.google.com/?q=456+Oak+Avenue",
                 Latitude = 34.0522,
                 Longitude = -118.2437,
                 ImgUrl = "https://media-cdn.tripadvisor.com/media/photo-s/10/e5/73/92/photo1jpg.jpg",

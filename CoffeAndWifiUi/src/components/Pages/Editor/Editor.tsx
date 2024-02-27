@@ -8,25 +8,26 @@ import {
   faPlug,
   faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Editor.scss";
 import PrimaryButton from "../../Buttons/Primary/PrimaryButton";
 import { generateRatings, generateSeats } from "../../../utils/generateOptions";
+import InputComponent from "../../FormComponents/InputComponent";
+import SelectOptionComponent from "../../FormComponents/SelectOptionComponent";
+import CheckboxComponent from "../../FormComponents/CheckboxComponent";
 
 const sampleCafe = {
-  id: 0,
+  id: undefined,
   name: "",
   country: "",
   city: "",
   address: "",
-  coffeePrice: "",
+  coffeePrice: undefined,
   description: "",
   imgUrl: "",
-  latitude: "",
-  longitude: "",
-  mapUrl: "",
-  rating: 0,
-  seats: "",
+  latitude: undefined,
+  longitude: undefined,
+  rating: undefined,
+  seats: undefined,
   canPayWithCard: false,
   canTakeCalls: false,
   hasSockets: false,
@@ -38,11 +39,13 @@ const sampleCafe = {
 const Editor = () => {
   const [cafe, setCafe] = useState(sampleCafe);
 
-  const handleSetChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleSetChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const type = e.target.type;
     const name = e.target.name;
     if (type === "checkbox") {
-      const event = e as ChangeEvent<HTMLInputElement>
+      const event = e as ChangeEvent<HTMLInputElement>;
       const value = event.target.checked;
       setCafe({ ...cafe, [name]: value });
     } else {
@@ -62,200 +65,152 @@ const Editor = () => {
           <div className="container editor-form-container mb-5">
             <div className="row mt-5">
               <div className="col-md-2 mb-3">
-                <label htmlFor="name" className="form-label fs-4">
-                  Cafe Name:
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="name"
-                  value={cafe.name}
+                <InputComponent
                   name="name"
+                  value={cafe.name}
                   placeholder="Cafe name"
-                  className="form-control custom-input fs-4"
+                  type="text"
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 mb-3">
-                <label htmlFor="country" className="form-label  fs-4">
-                  Country:
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="country"
-                  value={cafe.country}
+                <InputComponent
                   name="country"
+                  value={cafe.country}
                   placeholder="Country"
-                  className="form-control custom-input fs-4"
+                  type="text"
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 mb-3">
-                <label htmlFor="city" className="form-label  fs-4">
-                  City:
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="city"
+                <InputComponent
                   name="city"
                   value={cafe.city}
                   placeholder="City"
-                  className="form-control custom-input fs-4"
+                  type="text"
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-3 mb-3">
-                <label htmlFor="address" className="form-label  fs-4">
-                  Address:
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="address"
+                <InputComponent
                   name="address"
                   value={cafe.address}
                   placeholder="Address"
-                  className="form-control custom-input fs-4"
+                  type="text"
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 mb-3">
-                <label htmlFor="coffeePrice" className="form-label  fs-4">
-                  Price: ($)
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="coffeePrice"
+                <InputComponent
                   name="coffeePrice"
                   value={cafe.coffeePrice}
-                  placeholder="Coffee price"
-                  className="form-control custom-input fs-4"
+                  placeholder="Price ($)"
+                  type="number"
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-1 mb-3">
-                <label htmlFor="rating" className="form-label fs-4">
-                  Rating:
-                </label>
-                <select name="rating" id="rating" value={cafe.rating} onChange={handleSetChange} className="form-select custom-input fs-4">
-                  {generateRatings()}
-                </select>
+                <SelectOptionComponent
+                  name="rating"
+                  value={cafe.rating}
+                  options={generateRatings()}
+                  onChange={handleSetChange}
+                />
               </div>
             </div>
             <div className="row">
-              <div className="col-md-1 mb-3">
-                <label htmlFor="seats" className="form-label  fs-4">
-                  Seats:
-                </label>
-                <select name="seats" id="seats" value={cafe.seats} onChange={handleSetChange} className="form-select custom-input fs-4">
-                  {generateSeats()}
-                </select>
+              <div className="col-md-2 mb-3">
+                <SelectOptionComponent
+                  name="seats"
+                  value={cafe.seats}
+                  options={generateSeats()}
+                  onChange={handleSetChange}
+                />
               </div>
               <div className="col-md-6 mb-3">
-                <label htmlFor="imgUrl" className="form-label  fs-4">
-                  Image url:
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="imgUrl"
+                <InputComponent
                   name="imgUrl"
                   value={cafe.imgUrl}
                   placeholder="Image url"
-                  className="form-control custom-input fs-4"
+                  type="text"
+                  onChange={handleSetChange}
                 />
               </div>
-              <div className="col-md-5 mb-3">
-                <label htmlFor="mapUrl" className="form-label  fs-4">
-                  Google maps url:
-                </label>
-                <input
+              <div className="col-md-2 mb-3">
+                <InputComponent
+                  name="longitude"
+                  value={cafe.longitude}
+                  placeholder="Longitude"
+                  type="number"
                   onChange={handleSetChange}
-                  id="mapUrl"
-                  name="mapUrl"
-                  value={cafe.mapUrl}
-                  placeholder="Google maps url"
-                  className="form-control custom-input fs-4"
+                />
+              </div>
+              <div className="col-md-2 mb-3">
+                <InputComponent
+                  name="latitude"
+                  value={cafe.latitude}
+                  placeholder="Latitude"
+                  type="number"
+                  onChange={handleSetChange}
                 />
               </div>
             </div>
             <div className="row">
               <div className="col-md-12 mb-3">
-                <label htmlFor="description" className="form-label  fs-4">
-                  Description:
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="description"
+                <InputComponent
                   name="description"
                   value={cafe.description}
                   placeholder="Description"
-                  className="form-control custom-input fs-4"
+                  type="text"
+                  onChange={handleSetChange}
                 />
               </div>
             </div>
             <div className="row">
               <div className="col-md-2 col-6 mb-3">
-                <label htmlFor="canPayWithCard" className="form-label fs-3">
-                  <FontAwesomeIcon className="fs-3 me-2" icon={faCreditCard} />
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="canPayWithCard"
-                  type="checkbox"
+                <CheckboxComponent
                   name="canPayWithCard"
                   checked={cafe.canPayWithCard}
-                  className="form-check-input custom-input fs-3"
+                  icon={faCreditCard}
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 col-6 mb-3">
-                <label htmlFor="canTakeCalls" className="form-label  fs-3">
-                  <FontAwesomeIcon className="fs-3 me-2" icon={faPhone} />
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="canTakeCalls"
-                  type="checkbox"
+                <CheckboxComponent
                   name="canTakeCalls"
                   checked={cafe.canTakeCalls}
-                  className="form-check-input custom-input fs-3"
+                  icon={faPhone}
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 col-6 mb-3">
-                <label htmlFor="hasSockets" className="form-label  fs-3">
-                  <FontAwesomeIcon className="fs-3 me-2" icon={faPlug} />
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="hasSockets"
-                  type="checkbox"
+                <CheckboxComponent
                   name="hasSockets"
                   checked={cafe.hasSockets}
-                  className="form-check-input custom-input fs-3"
+                  icon={faPlug}
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 col-6 mb-3">
-                <label htmlFor="hasToilet" className="form-label  fs-3">
-                  <FontAwesomeIcon className="fs-3 me-2" icon={faToilet} />
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="hasToilet"
-                  type="checkbox"
+                <CheckboxComponent
                   name="hasToilet"
                   checked={cafe.hasToilet}
-                  className="form-check-input custom-input fs-3"
+                  icon={faToilet}
+                  onChange={handleSetChange}
                 />
               </div>
               <div className="col-md-2 col-6 mb-3">
-                <label htmlFor="hasWifi" className="form-label  fs-3">
-                  <FontAwesomeIcon className="fs-3 me-2" icon={faWifiStrong} />
-                </label>
-                <input
-                  onChange={handleSetChange}
-                  id="hasWifi"
-                  type="checkbox"
+                <CheckboxComponent
                   name="hasWifi"
                   checked={cafe.hasWifi}
-                  className="form-check-input custom-input fs-3"
+                  icon={faWifiStrong}
+                  onChange={handleSetChange}
                 />
               </div>
             </div>
           </div>
           <div className="text-center mb-5 mt-4">
-            <PrimaryButton className="fs-2" text="Submit" type="button" />
+            <PrimaryButton className="fs-2" text="Submit" type="submit" />
           </div>
         </form>
       </div>

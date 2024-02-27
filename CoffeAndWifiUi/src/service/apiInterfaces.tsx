@@ -29,7 +29,6 @@ export interface RequestOptions {
     imgUrl: string;
     latitude: number;
     longitude: number;
-    mapUrl: string;
     name: string;
     rating: number;
     seats: number;

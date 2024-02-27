@@ -47,7 +47,7 @@ const Cafes = () => {
       <Navbar />
       <div className="cafes-content">
         <div className="container">
-          {cafes &&
+          {cafes ? (
             cafes.map((cafe) => (
               <div
                 className="cafe-item-container rounded py-3 text-center my-5"
@@ -61,7 +61,12 @@ const Cafes = () => {
                   onClick={() => handleShowDetails(cafe.id)}
                 />
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="text-center">
+            <h2 className="my-5">Cafes not found. The server not responding.</h2>
+            </div>
+          )}
         </div>
         <Footer />
       </div>

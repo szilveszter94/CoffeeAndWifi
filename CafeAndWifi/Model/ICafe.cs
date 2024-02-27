@@ -4,7 +4,6 @@ public interface ICafe
 {
     int Id { get; init; }
     string Name { get; init; }
-    string MapUrl { get; init; }
     double Latitude { get; init; }
     double Longitude { get; init; }
     string ImgUrl { get; init; }
