@@ -16,18 +16,35 @@ public class CafeController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<Cafe> GetCoffeeByLocation(double lat, double lon)
+    public ActionResult<Cafe> GetCafes()
     {
         try
         {
             var result = _cafeRepository.GetCafes();
-            return Ok(new {data = result, message = "Coffee retrieved successfully."});
+            return Ok(new {data = result, message = "Cafe retrieved successfully."});
 
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return NotFound(new { message = "An unexpected error occured. Coffee not found." });
+            return NotFound(new { message = "An unexpected error occured. Cafe not found." });
+        }
+    }
+    
+    [HttpGet("{id}")]
+    public ActionResult<Cafe> GetCafeById(int id)
+    {
+        try
+        {
+            var result = _cafeRepository.GetCafeById(id);
+            if (result == null) return NotFound(new { message = "Cafe not found." });
+            return Ok(new {data = result, message = "Cafe retrieved successfully."});
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return NotFound(new { message = "An unexpected error occured. Cafe not found." });
         }
     }
 }

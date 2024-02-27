@@ -34,7 +34,6 @@ const renderStars = (rating: number) => {
     );
   }
 
-
   for (let i = stars.length; i < 5; i++) {
     stars.push(
       <FontAwesomeIcon
@@ -51,9 +50,13 @@ const renderStars = (rating: number) => {
 
 const StarComponent = ({ rating, name }: StarComponentProps) => {
   return (
-    <h1 className="mb-5">
-      {name} {"-"} {rating} <span className="ms-3">{renderStars(rating)}</span>
-    </h1>
+    <div className="mb-5">
+      <h1>{name}</h1>
+      <h3>Rating: {rating}</h3>
+      <h2>
+        <span className="ms-3">{renderStars(rating)}</span>
+      </h2>
+    </div>
   );
 };
 

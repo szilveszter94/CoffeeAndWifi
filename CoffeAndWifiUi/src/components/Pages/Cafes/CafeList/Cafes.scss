@@ -1,7 +1,7 @@
-@import "../../../Style/variables";
+@import "../../../../Style/variables";
 
 .cafes-container {
-    background-image: url("../../../assets/images/cafe-bg.jpg");
+    background-image: url("../../../../assets/images/cafe-bg.jpg");
     display: flex;
     flex-direction: column;
     overflow: auto;
