@@ -1,4 +1,4 @@
-namespace CoffeAndWifi.Middleware;
+namespace CafeAndWifi.Middleware;
 
 public class Startup
 {

@@ -1,7 +1,7 @@
-@import "../../../Style/variables";
+@import "../../../../Style/variables";
 
-.home-container {
-    background-image: url("../../../assets/images/bg.jpg");
+.single-cafe-container { 
+    background-image: url("../../../../assets/images/cafe-bg-2.jpeg");
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -10,13 +10,9 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+    color: $text-color;
 }
 
-.home-content {
+.single-cafe-content {
     flex: 1;
-}
-
-.brand-name {
-    font-family: $brand-font;
-    color: $logo-color;
 }
