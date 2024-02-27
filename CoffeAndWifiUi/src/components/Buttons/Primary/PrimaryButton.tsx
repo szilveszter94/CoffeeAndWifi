@@ -5,11 +5,12 @@ interface ButtonProps {
   text: string;
   onClick?: () => any;
   type?: "submit" | "reset" | "button";
+  className?: string;
 }
 
-const PrimaryButton = ({ text, onClick, type }: ButtonProps) => {
+const PrimaryButton = ({ text, onClick, type, className }: ButtonProps) => {
   return (
-    <button type={type} className="primary-button fs-5" onClick={onClick}>
+    <button type={type} className={`primary-button ${className && className}`} onClick={onClick}>
       {text}
     </button>
   );

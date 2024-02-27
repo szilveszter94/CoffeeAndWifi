@@ -29,7 +29,7 @@ public class CafeRepository : ICafeRepository
                 HasWifi = true,
                 HasSockets = true,
                 CanTakeCalls = true,
-                CanPayWith_card = true,
+                CanPayWithCard = true,
                 Comments = new List<Comment>
                 {
                     new()
@@ -58,7 +58,7 @@ public class CafeRepository : ICafeRepository
                 HasWifi = false,
                 HasSockets = false,
                 CanTakeCalls = false,
-                CanPayWith_card = false,
+                CanPayWithCard = false,
                 Comments = new List<Comment>
                 {
                     new() { Id = 3, CafeId = 2, AuthorId = 1, Date = DateTime.Now, Text = "Amazing latte art!" },
@@ -94,6 +94,21 @@ public class CafeRepository : ICafeRepository
         {
             Console.WriteLine(e);
             throw new Exception("Cannot get cafe, an error occured.");
+        }
+        
+    }
+
+    public Cafe AddCafe(Cafe cafe)
+    {
+        try
+        {
+            _cafes.Add(cafe);
+            return cafe;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Cafe not created. An error occured.");
         }
         
     }

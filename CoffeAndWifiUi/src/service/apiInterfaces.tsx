@@ -15,7 +15,7 @@ export interface RequestOptions {
   
   export interface CafeProps {
     address: string;
-    canPayWith_card: boolean;
+    canPayWithCard: boolean;
     canTakeCalls: boolean;
     city: string;
     coffeePrice: number;

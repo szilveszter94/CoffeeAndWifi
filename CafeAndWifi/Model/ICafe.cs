@@ -19,6 +19,6 @@ public interface ICafe
     bool HasWifi { get; init; }
     bool HasSockets { get; init; }
     bool CanTakeCalls { get; init; }
-    bool CanPayWith_card { get; init; }
+    bool CanPayWithCard { get; init; }
     List<Comment> Comments { get; set; }
 }

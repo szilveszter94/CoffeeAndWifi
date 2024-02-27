@@ -1,6 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faHouse } from "@fortawesome/free-solid-svg-icons";
+import {
+  faInfoCircle,
+  faHouse,
+  faPlusCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import Logo from "../../../assets/logo.png";
 import "./Navbar.scss";
 import PrimaryButton from "../../Buttons/Primary/PrimaryButton";
@@ -43,6 +47,11 @@ const Navbar = () => {
                 About <FontAwesomeIcon icon={faInfoCircle} />
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link ms-4 fs-3" to="/create">
+                Add new cafe <FontAwesomeIcon icon={faPlusCircle} />
+              </Link>
+            </li>
           </ul>
           <form onSubmit={handleDataFetch} className="d-flex" role="search">
             <input
@@ -55,6 +64,7 @@ const Navbar = () => {
               onClick={undefined}
               type="submit"
               text="Search"
+              className="fs-3"
             ></PrimaryButton>
           </form>
         </div>
