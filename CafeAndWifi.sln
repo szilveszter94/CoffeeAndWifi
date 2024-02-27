@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeAndWifi", "CoffeAndWifi\CoffeAndWifi.csproj", "{8C96F7AF-9BDD-40D6-994F-A1F554C245F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeAndWifi", "CafeAndWifi\CafeAndWifi.csproj", "{8C96F7AF-9BDD-40D6-994F-A1F554C245F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

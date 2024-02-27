@@ -1,0 +1,33 @@
+@import "../../../Style/variables";
+
+.cafes-container {
+    background-image: url("../../../assets/images/cafe-bg.jpg");
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 100%;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: $text-color;
+}
+
+.cafe-item-container {
+    background-color: $primary-bg-color-transparent;
+}
+
+.cafes-content {
+    flex: 1;
+}
+
+.not-available-span {
+    position: relative;
+}
+
+.not-available-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scaleX(-1);
+}

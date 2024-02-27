@@ -25,20 +25,20 @@ const Home = () => {
   }
 
   return (
-    <div className="main vh-100">
+    <div className="home-container vh-100">
       <Navbar />
       <div className="home-content">
         <div className="container mt-5">
           <div className="text-center">
-            <h1 className="homepage-title mb-4">
+            <h1 className="title mb-4">
               Discover Your Perfect Work Haven with{" "}
               <span className="brand-name">{" NetCafé "}</span>!
             </h1>
-            <h2 className="homepage-subtitle mb-4">
+            <h2 className="lead-text mb-4">
               Searching for the ideal spot to unleash your productivity while
               indulging in the finest brews? Look no further.
             </h2>
-            <h2 className="homepage-subtitle">
+            <h2 className="lead-text">
               Gone are the days of aimless wandering in search of a suitable
               workspace. With our curated collection of cafes, you can now find
               your ideal sanctuary with just a few clicks.
