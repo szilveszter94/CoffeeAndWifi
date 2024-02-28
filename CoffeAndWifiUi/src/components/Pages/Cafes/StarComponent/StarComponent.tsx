@@ -3,11 +3,14 @@ import { faStar, faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 
 interface StarComponentProps {
-  rating: number;
+  rating: number | "";
   name: string;
 }
 
-const renderStars = (rating: number) => {
+const renderStars = (rating: number | "") => {
+  if (!rating){
+    return [];
+  }
   const fullStars = Math.floor(rating);
   const decimalPart = rating - fullStars;
   const stars = [];

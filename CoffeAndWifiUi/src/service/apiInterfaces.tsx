@@ -14,24 +14,24 @@ export interface RequestOptions {
   }
   
   export interface CafeProps {
+    id: number;
+    name: string;
+    country: string;
+    city: string;
     address: string;
+    imgUrl: string;
+    latitude: number | "";
+    longitude: number | "";
+    coffeePrice: number | "";
+    rating: number | "";
+    seats: number | "";
+    description: string;
     canPayWithCard: boolean;
     canTakeCalls: boolean;
-    city: string;
-    coffeePrice: number;
-    comments: CommentProps[];
-    country: string;
-    description: string;
     hasSockets: boolean;
     hasToilet: boolean;
     hasWifi: boolean;
-    id: number;
-    imgUrl: string;
-    latitude: number;
-    longitude: number;
-    name: string;
-    rating: number;
-    seats: number;
+    comments: CommentProps[];
   }
   
   export interface CafeListResponse {

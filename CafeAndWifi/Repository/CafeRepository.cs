@@ -108,6 +108,53 @@ public class CafeRepository : ICafeRepository
             Console.WriteLine(e);
             throw new Exception("Cafe not created. An error occured.");
         }
-        
+    }
+    
+    public Cafe EditCafe(Cafe cafe)
+    {
+        try
+        {
+            int accountId = _cafes.FindIndex(acc => acc.Id == cafe.Id);
+            if (accountId < 0)
+            {
+                throw new KeyNotFoundException("Failed to update. Cafe not found.");
+            }
+
+            _cafes[accountId] = cafe;
+            return cafe;
+        }
+        catch (KeyNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("An unexpected error occured. Cafe not updated.");
+        }
+    }
+    
+    public void DeleteCafe(int id)
+    {
+        try
+        {
+            Cafe? cafe = _cafes.Find(acc => acc.Id == id);
+            if (cafe == null)
+            {
+                throw new KeyNotFoundException("Failed to delete. Cafe not found.");
+            }
+            _cafes.Remove(cafe);
+        }
+        catch (KeyNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("An unexpected error occured during delete.");
+        }
     }
 }

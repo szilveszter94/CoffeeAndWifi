@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Navbar from "../../Section/Navbar/Navbar";
 import Footer from "../../Section/Footer/Footer";
 import {
@@ -14,20 +14,24 @@ import { generateRatings, generateSeats } from "../../../utils/generateOptions";
 import InputComponent from "../../FormComponents/InputComponent";
 import SelectOptionComponent from "../../FormComponents/SelectOptionComponent";
 import CheckboxComponent from "../../FormComponents/CheckboxComponent";
+import { fetchData } from "../../../service/apiService";
+import { CafeProps, SingleCafeResponse } from "../../../service/apiInterfaces";
+import { useParams } from "react-router-dom";
+import Loading from "../Loading/Loading";
 
-const sampleCafe = {
-  id: undefined,
+const sampleCafe: CafeProps = {
+  id: 0,
   name: "",
   country: "",
   city: "",
   address: "",
-  coffeePrice: undefined,
+  coffeePrice: "",
   description: "",
   imgUrl: "",
-  latitude: undefined,
-  longitude: undefined,
-  rating: undefined,
-  seats: undefined,
+  latitude: "",
+  longitude: "",
+  rating: "",
+  seats: "",
   canPayWithCard: false,
   canTakeCalls: false,
   hasSockets: false,
@@ -38,6 +42,35 @@ const sampleCafe = {
 
 const Editor = () => {
   const [cafe, setCafe] = useState(sampleCafe);
+  const [loading, setLoading] = useState(false);
+  const { id } = useParams();
+
+  useEffect(() => {
+    const loadEditObject = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchData({
+          path: `/Cafe/${id}`,
+          method: "GET",
+          body: null,
+        });
+        if (response.ok) {
+          const cafeResponse = response as SingleCafeResponse;
+          setCafe(cafeResponse.data);
+        } else {
+          alert(response.message);
+        }
+      } catch (error) {
+        alert("Server not responding.");
+      }
+      setLoading(false);
+    };
+    if (id) {
+      loadEditObject();
+    } else {
+      setCafe(sampleCafe);
+    }
+  }, [id]);
 
   const handleSetChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -54,14 +87,40 @@ const Editor = () => {
     }
   };
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const method = id ? "PATCH" : "POST";
+    try {
+      setLoading(true);
+      const response = await fetchData({
+        path: "/Cafe",
+        method: method,
+        body: cafe,
+      });
+      if (response.ok) {
+        const newCafe = response as SingleCafeResponse;
+        console.log(newCafe);
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      alert("Server not responding.");
+    }
+    setLoading(false);
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="editor-container vh-100">
       <Navbar />
       <div className="editor-content">
         <div className="mt-3 text-center">
-          <h1 className="fs-1">Create new cafe</h1>
+          <h1 className="fs-1">{id ? "Edit cafe" : "Create new cafe"}</h1>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="container editor-form-container mb-5">
             <div className="row mt-5">
               <div className="col-md-2 mb-3">
@@ -109,14 +168,16 @@ const Editor = () => {
                   onChange={handleSetChange}
                 />
               </div>
-              <div className="col-md-1 mb-3">
-                <SelectOptionComponent
-                  name="rating"
-                  value={cafe.rating}
-                  options={generateRatings()}
-                  onChange={handleSetChange}
-                />
-              </div>
+              {!id && (
+                <div className="col-md-1 mb-3">
+                  <SelectOptionComponent
+                    name="rating"
+                    value={cafe.rating}
+                    options={generateRatings()}
+                    onChange={handleSetChange}
+                  />
+                </div>
+              )}
             </div>
             <div className="row">
               <div className="col-md-2 mb-3">

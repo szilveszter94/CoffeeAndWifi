@@ -3,7 +3,7 @@ import { capitalizeFirstLetter } from "../../utils/helperFunctions";
 
 interface OptionProps {
   name: string;
-  value: number | undefined;
+  value: number | string;
   onChange: ChangeEventHandler<HTMLSelectElement>;
   options: JSX.Element[];
 }
