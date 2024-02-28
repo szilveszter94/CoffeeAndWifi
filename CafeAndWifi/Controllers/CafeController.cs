@@ -47,4 +47,49 @@ public class CafeController : ControllerBase
             return NotFound(new { message = "An unexpected error occured. Cafe not found." });
         }
     }
+
+    [HttpPost]
+    public ActionResult<Cafe> AddCafe(Cafe cafe)
+    {
+        try
+        {
+            var result = _cafeRepository.AddCafe(cafe);
+            return Ok(new { message = "Cafe created successfully", data = result });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = "Cafe not created." });
+        }
+    }
+    
+    [HttpPatch]
+    public ActionResult<Cafe> EditCafe(Cafe cafe)
+    {
+        try
+        {
+            var result = _cafeRepository.EditCafe(cafe);
+            return Ok(new { message = "Cafe modified successfully", data = result });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
+    }
+    
+    [HttpDelete("{id}")]
+    public ActionResult<Cafe> DeleteCafe(int id)
+    {
+        try
+        {
+            _cafeRepository.DeleteCafe(id);
+            return Ok(new { message = "Cafe deleted successfully" });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
+    }
 }

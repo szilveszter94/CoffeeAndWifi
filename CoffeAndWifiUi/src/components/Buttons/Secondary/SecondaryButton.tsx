@@ -9,9 +9,8 @@ interface ButtonProps {
 }
 
 const SecondaryButton = ({ text, type, className, onClick }: ButtonProps) => {
-  const buttonClass = `secondary-button fs-3 ${className}`;
   return (
-    <button type={type} className={buttonClass} onClick={onClick}>
+    <button type={type} className={`secondary-button  ${className && className}`} onClick={onClick}>
       {text}
     </button>
   );

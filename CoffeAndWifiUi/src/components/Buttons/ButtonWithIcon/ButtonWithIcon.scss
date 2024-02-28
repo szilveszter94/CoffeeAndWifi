@@ -1,0 +1,24 @@
+@import "../../../Style/variables";
+
+.button-with-icon {
+    background-color: $success-color;
+    border: none;
+    width: max-content;
+    padding: 0 2dvw;
+    font-weight: 600;
+    text-wrap: nowrap;
+    border-radius: 10px;
+    color: $text-color;
+}
+
+.button-with-icon.delete {
+    background-color: $danger-color;
+}
+
+.button-with-icon:hover {
+    background-color: $success-secondary-color;
+}
+
+.button-with-icon.delete:hover {
+    background-color: $danger-secondary-color;
+}

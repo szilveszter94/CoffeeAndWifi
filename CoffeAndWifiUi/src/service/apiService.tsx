@@ -2,7 +2,7 @@
 import { RequestOptions, CafeListResponse } from "./apiInterfaces";
 const baseUrl = "http://localhost:5153";
 
-export const fetchCafeList = async ({ path, method, body }: RequestOptions) => {
+export const fetchData = async ({ path, method, body }: RequestOptions) => {
   try {
     const url = `${baseUrl}${path}`;
     const options: RequestInit = {

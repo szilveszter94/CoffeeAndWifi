@@ -53,7 +53,7 @@ const CafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
         <CafeIconComponent hasProperty={cafe.hasWifi} icon={faWifiStrong} />
         <CafeIconComponent hasProperty={cafe.canTakeCalls} icon={faPhone} />
         <CafeIconComponent
-          hasProperty={cafe.canPayWith_card}
+          hasProperty={cafe.canPayWithCard}
           icon={faCreditCard}
         />
         <CafeIconComponent hasProperty={cafe.hasToilet} icon={faToilet} />

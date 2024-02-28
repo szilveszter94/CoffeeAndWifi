@@ -5,6 +5,7 @@ import Cafes from "./components/Pages/Cafes/CafeList/Cafes";
 
 import "./App.scss";
 import SingleCafe from "./components/Pages/Cafes/SingleCafe/SingleCafe";
+import Editor from "./components/Pages/Editor/Editor";
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/cafes" element={<Cafes />} />
         <Route path="/cafe/:id" element={<SingleCafe />} />
+        <Route path="/create" element={<Editor />} />
+        <Route path="/editor/:id" element={<Editor />} />
       </Routes>
     </>
   );

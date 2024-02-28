@@ -4,7 +4,6 @@ public class Cafe : ICafe
 {
     public int Id { get; init; }
     public string Name { get; init; }
-    public string MapUrl { get; init; }
     public double Latitude { get; init; }
     public double Longitude { get; init; }
     public string ImgUrl { get; init; }
@@ -19,6 +18,6 @@ public class Cafe : ICafe
     public bool HasWifi { get; init; }
     public bool HasSockets { get; init; }
     public bool CanTakeCalls { get; init; }
-    public bool CanPayWith_card { get; init; }
+    public bool CanPayWithCard { get; init; }
     public List<Comment> Comments  { get; set; }
 }

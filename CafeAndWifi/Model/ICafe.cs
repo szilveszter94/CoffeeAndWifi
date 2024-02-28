@@ -4,7 +4,6 @@ public interface ICafe
 {
     int Id { get; init; }
     string Name { get; init; }
-    string MapUrl { get; init; }
     double Latitude { get; init; }
     double Longitude { get; init; }
     string ImgUrl { get; init; }
@@ -19,6 +18,6 @@ public interface ICafe
     bool HasWifi { get; init; }
     bool HasSockets { get; init; }
     bool CanTakeCalls { get; init; }
-    bool CanPayWith_card { get; init; }
+    bool CanPayWithCard { get; init; }
     List<Comment> Comments { get; set; }
 }

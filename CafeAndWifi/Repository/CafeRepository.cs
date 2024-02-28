@@ -14,7 +14,6 @@ public class CafeRepository : ICafeRepository
             {
                 Id = 1,
                 Name = "Coffee House",
-                MapUrl = "https://maps.google.com/?q=123+Main+Street",
                 Latitude = 40.7128,
                 Longitude = -74.0060,
                 ImgUrl = "https://garzoncafe.hu/wp-content/uploads/2022/03/GARZON_inside.png",
@@ -29,7 +28,7 @@ public class CafeRepository : ICafeRepository
                 HasWifi = true,
                 HasSockets = true,
                 CanTakeCalls = true,
-                CanPayWith_card = true,
+                CanPayWithCard = true,
                 Comments = new List<Comment>
                 {
                     new()
@@ -43,7 +42,6 @@ public class CafeRepository : ICafeRepository
             {
                 Id = 2,
                 Name = "Latte Lounge",
-                MapUrl = "https://maps.google.com/?q=456+Oak+Avenue",
                 Latitude = 34.0522,
                 Longitude = -118.2437,
                 ImgUrl = "https://media-cdn.tripadvisor.com/media/photo-s/10/e5/73/92/photo1jpg.jpg",
@@ -58,7 +56,7 @@ public class CafeRepository : ICafeRepository
                 HasWifi = false,
                 HasSockets = false,
                 CanTakeCalls = false,
-                CanPayWith_card = false,
+                CanPayWithCard = false,
                 Comments = new List<Comment>
                 {
                     new() { Id = 3, CafeId = 2, AuthorId = 1, Date = DateTime.Now, Text = "Amazing latte art!" },
@@ -96,5 +94,67 @@ public class CafeRepository : ICafeRepository
             throw new Exception("Cannot get cafe, an error occured.");
         }
         
+    }
+
+    public Cafe AddCafe(Cafe cafe)
+    {
+        try
+        {
+            _cafes.Add(cafe);
+            return cafe;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Cafe not created. An error occured.");
+        }
+    }
+    
+    public Cafe EditCafe(Cafe cafe)
+    {
+        try
+        {
+            int accountId = _cafes.FindIndex(acc => acc.Id == cafe.Id);
+            if (accountId < 0)
+            {
+                throw new KeyNotFoundException("Failed to update. Cafe not found.");
+            }
+
+            _cafes[accountId] = cafe;
+            return cafe;
+        }
+        catch (KeyNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("An unexpected error occured. Cafe not updated.");
+        }
+    }
+    
+    public void DeleteCafe(int id)
+    {
+        try
+        {
+            Cafe? cafe = _cafes.Find(acc => acc.Id == id);
+            if (cafe == null)
+            {
+                throw new KeyNotFoundException("Failed to delete. Cafe not found.");
+            }
+            _cafes.Remove(cafe);
+        }
+        catch (KeyNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("An unexpected error occured during delete.");
+        }
     }
 }
