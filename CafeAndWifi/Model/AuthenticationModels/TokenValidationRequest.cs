@@ -1,6 +1,3 @@
 namespace CafeAndWifi.Model.AuthenticationModels;
 
-public class TokenValidationRequest
-{
-    
-}
+public record TokenValidationRequest(string Token);

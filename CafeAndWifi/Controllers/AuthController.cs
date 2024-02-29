@@ -1,7 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
 using Azure;
 using CafeAndWifi.Model.AuthenticationModels;
 using CafeAndWifi.Services.Authentication;
 using CafeAndWifi.Services.EmailService;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -147,6 +149,45 @@ public class AuthController : ControllerBase
         }
 
         return Ok(new { message = "Login successful", data = new AuthResponse(result.Email, result.UserName, result.Token) });
+    }
+    
+    [HttpGet("Logout")]
+    public async Task<ActionResult<AuthResponse>> Logout()
+    {
+        try
+        {
+            await HttpContext.SignOutAsync();
+            return Ok(new { message = "Logout successful" });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during logout" });
+        }
+    }
+    
+    
+    
+    [HttpPost("Validate")]
+    public async Task<IActionResult> ValidateToken([FromBody] TokenValidationRequest request)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadToken(request.Token) as JwtSecurityToken;
+            
+            if (token.ValidTo < DateTime.UtcNow)
+            {
+                return BadRequest(new { message = "Token expired" });
+            }
+            
+            return Ok(new { message = "Token is valid" });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return BadRequest(new { message = "Token validation failed" });
+        }
     }
 
     private void AddErrors(AuthResult result)

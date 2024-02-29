@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { RequestOptions, CafeListResponse } from "./apiInterfaces";
-const baseUrl = "http://localhost:5153";
+const baseUrl = "http://localhost:7079";
 
 export const fetchData = async ({ path, method, body }: RequestOptions) => {
   try {
     const url = `${baseUrl}${path}`;
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      throw new Error("Access token not found");
+    }
+
     const options: RequestInit = {
       method: method,
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     };
 
