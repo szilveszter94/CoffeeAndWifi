@@ -3,6 +3,7 @@ using System.Text;
 using CafeAndWifi.Context;
 using CafeAndWifi.Repository;
 using CafeAndWifi.Services.Authentication;
+using CafeAndWifi.Services.EmailService;
 using CafeAndWifi.Services.Token;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -58,6 +59,7 @@ void AddServices()
         services.AddEndpointsApiExplorer();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddTransient<IEmailSender, EmailSender>();
     }
     
 void ConfigureSwagger()
@@ -123,7 +125,7 @@ void AddIdentity()
     services
         .AddIdentityCore<IdentityUser>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = false;
+            options.SignIn.RequireConfirmedAccount = true;
             options.User.RequireUniqueEmail = true;
             options.Password.RequireDigit = false;
             options.Password.RequiredLength = 6;
@@ -132,7 +134,8 @@ void AddIdentity()
             options.Password.RequireLowercase = false;
         })
         .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<UserContext.UsersContext>();
+        .AddEntityFrameworkStores<UserContext.UsersContext>()
+        .AddDefaultTokenProviders();
 }
 
 void AddRoles()
@@ -170,7 +173,7 @@ async Task CreateAdminIfNotExists()
     var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
     if (adminInDb == null)
     {
-        var admin = new IdentityUser { UserName = "admin", Email = "admin@admin.com" };
+        var admin = new IdentityUser { UserName = "admin", Email = "admin@admin.com", EmailConfirmed = true };
         var adminCreated = await userManager.CreateAsync(admin, "admin123");
 
         if (adminCreated.Succeeded)
