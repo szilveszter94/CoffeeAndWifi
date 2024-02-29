@@ -2,50 +2,42 @@
 import { jwtDecode } from "jwt-decode";
 import { fetchData } from "./apiService";
 
-// Function to check if token is expired
+interface tokenValidateProps {
+  token: string;
+}
+
 const isTokenExpired = (token: string): boolean => {
   const decodedToken: any = jwtDecode(token);
   const currentTime = Date.now() / 1000;
   return decodedToken.exp < currentTime;
 };
 
-interface tokenValidateProps {
-  token: string;
-}
-
 export const logoutUser = async () => {
   try {
-    const response = await fetchData({
-      path: "/Auth/Logout",
-      method: "GET",
-      body: null,
-    });
-    if (response.ok) {
-      return true;
-    } else {
-      return false;
-    }
+    localStorage.removeItem("accessToken");
+    console.log("Logout successful.");
   } catch (error) {
+    console.log("Failed to logout.");
     return false;
   }
 };
 
-// Function to validate the token
-const validateAuthToken = async ({
-  token,
-}: tokenValidateProps): Promise<boolean> => {
+const validateAuthToken = async (
+  token: tokenValidateProps
+): Promise<boolean> => {
   try {
     const isValid = await fetchData({
       path: "/Auth/Validate",
       method: "POST",
       body: token,
     });
+
     if (isValid.ok) {
       return true;
     }
     return false;
   } catch (error) {
-    console.error("Error validating token:", error);
+    console.error("Error validating token.");
     return false;
   }
 };
@@ -61,7 +53,6 @@ export const checkAuthStatus = async () => {
     localStorage.removeItem("accessToken");
     return false;
   }
-
 
   const isValid = await validateAuthToken({ token });
   if (!isValid) {

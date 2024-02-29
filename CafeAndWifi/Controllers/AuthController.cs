@@ -151,26 +151,10 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Login successful", data = new AuthResponse(result.Email, result.UserName, result.Token) });
     }
     
-    [HttpGet("Logout")]
-    public async Task<ActionResult<AuthResponse>> Logout()
-    {
-        try
-        {
-            await HttpContext.SignOutAsync();
-            return Ok(new { message = "Logout successful" });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during logout" });
-        }
-    }
-    
-    
-    
     [HttpPost("Validate")]
     public async Task<IActionResult> ValidateToken([FromBody] TokenValidationRequest request)
     {
+        Console.WriteLine($"Okkadsadasd {request}");
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();

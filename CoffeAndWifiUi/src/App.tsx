@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./components/Pages/Home/Home";
 import About from "./components/Pages/About/About";
 import Cafes from "./components/Pages/Cafes/CafeList/Cafes";
+import Login from "./components/Authentication/Login/Login";
+import Register from "./components/Authentication/Register/Register";
 
 import "./App.scss";
 import SingleCafe from "./components/Pages/Cafes/SingleCafe/SingleCafe";
@@ -17,6 +19,8 @@ function App() {
         <Route path="/cafe/:id" element={<SingleCafe />} />
         <Route path="/create" element={<Editor />} />
         <Route path="/editor/:id" element={<Editor />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </>
   );

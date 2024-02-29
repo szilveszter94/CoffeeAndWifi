@@ -48,6 +48,16 @@ const Navbar = () => {
               </Link>
             </li>
             <li className="nav-item">
+              <Link className="nav-link ms-4 fs-3" to="/register">
+                Register
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link ms-4 fs-3" to="/login">
+                Login
+              </Link>
+            </li>
+            <li className="nav-item">
               <Link className="nav-link ms-4 fs-3" to="/create">
                 Add new cafe <FontAwesomeIcon icon={faPlusCircle} />
               </Link>

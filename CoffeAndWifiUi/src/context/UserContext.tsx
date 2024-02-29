@@ -10,10 +10,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import { checkAuthStatus, logoutUser } from "../service/authService";
 
+interface userProps {
+  username: string;
+  email: string;
+}
+
 interface IUserContext {
-  currentUser: any; // Define your currentUser type here
+  currentUser: userProps | null; // Define your currentUser type here
   loading: boolean;
-  setCurrentUser: Dispatch<SetStateAction<any>>; // Define the type of setCurrentUser
+  setCurrentUser: Dispatch<SetStateAction<userProps | null>>; // Define the type of setCurrentUser
 }
 
 interface UserProviderProps {
