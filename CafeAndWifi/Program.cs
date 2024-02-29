@@ -1,10 +1,10 @@
-
 using System.Text;
 using CafeAndWifi.Context;
 using CafeAndWifi.Repository;
 using CafeAndWifi.Services.Authentication;
 using CafeAndWifi.Services.EmailService;
 using CafeAndWifi.Services.Token;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -100,6 +100,8 @@ void AddDbContext()
 
 void AddAuthentication()
 {
+    Env.Load();
+    var signInKey = Environment.GetEnvironmentVariable("ISSUER_SIGN_IN_KEY");
     services
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -114,7 +116,7 @@ void AddAuthentication()
                 ValidIssuer = "apiWithAuthBackend",
                 ValidAudience = "apiWithAuthBackend",
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes("!SomethingSecret!!SomethingSecret!")
+                    Encoding.UTF8.GetBytes(signInKey)
                 ),
             };
         });
@@ -140,7 +142,7 @@ void AddIdentity()
 
 void AddRoles()
 {
-    using var scope = app.Services.CreateScope(); // RoleManager is a scoped service, therefore we need a scope instance to access it
+    using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     var tAdmin = CreateAdminRole(roleManager);
@@ -152,12 +154,16 @@ void AddRoles()
 
 async Task CreateAdminRole(RoleManager<IdentityRole> roleManager)
 {
-    await roleManager.CreateAsync(new IdentityRole("Admin")); //The role string should better be stored as a constant or a value in appsettings
+    Env.Load();
+    var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE");
+    await roleManager.CreateAsync(new IdentityRole(adminRole));
 }
 
 async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
 {
-    await roleManager.CreateAsync(new IdentityRole("User")); //The role string should better be stored as a constant or a value in appsettings
+    Env.Load();
+    var userRole = Environment.GetEnvironmentVariable("USER_ROLE");
+    await roleManager.CreateAsync(new IdentityRole(userRole));
 }
 
 void AddAdmin()
@@ -168,17 +174,22 @@ void AddAdmin()
 
 async Task CreateAdminIfNotExists()
 {
+    Env.Load();
+    var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+    var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME");
+    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+    var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE");
     using var scope = app.Services.CreateScope();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-    var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
+    var adminInDb = await userManager.FindByEmailAsync(adminEmail);
     if (adminInDb == null)
     {
-        var admin = new IdentityUser { UserName = "admin", Email = "admin@admin.com", EmailConfirmed = true };
-        var adminCreated = await userManager.CreateAsync(admin, "admin123");
+        var admin = new IdentityUser { UserName = adminUsername, Email = adminEmail, EmailConfirmed = true };
+        var adminCreated = await userManager.CreateAsync(admin, adminPassword);
 
         if (adminCreated.Succeeded)
         {
-            await userManager.AddToRoleAsync(admin, "Admin");
+            await userManager.AddToRoleAsync(admin, adminRole);
         }
     }
 }
