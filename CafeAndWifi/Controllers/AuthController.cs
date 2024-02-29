@@ -4,6 +4,7 @@ using CafeAndWifi.Services.Authentication;
 using CafeAndWifi.Services.EmailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CafeAndWifi.Controllers;
 
@@ -29,7 +30,7 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Register failed. An error occured." } );
             }
 
             var result =
@@ -38,10 +39,10 @@ public class AuthController : ControllerBase
             if (!result.Success)
             {
                 AddErrors(result);
-                return BadRequest(ModelState);
+                return BadRequest(new { message = ExtractErrorMessageFromModelState(ModelState)} );
             }
 
-            await SendEmail(request);
+            await SendEmailConfirmation(request.Email);
             return CreatedAtAction(nameof(Register),
                 new
                 {
@@ -61,22 +62,72 @@ public class AuthController : ControllerBase
     {
         if (userId == null || token == null)
         {
-            return BadRequest("Invalid credentials.");
+            return BadRequest(new {message = "Invalid credentials."});
         }
 
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            return BadRequest("Invalid user id.");
+            return BadRequest(new {message = "Invalid user id."});
         }
         
         var result = await _userManager.ConfirmEmailAsync(user, token);
         if (result.Succeeded)
         {
-            return Ok("Successfully confirmed.");
+            return Ok(new {message = "Successfully confirmed."});
         }
         
-        return BadRequest("Confirmation failed.");
+        return BadRequest(new {message = "Confirmation failed."});
+    }
+    
+    [HttpGet("ResetPassword")]
+    public IActionResult ResetPassword(string userId, string token)
+    {
+        if (userId == null || token == null)
+        {
+            return BadRequest(new { message = "Invalid reset link." });
+        }
+        
+        return Ok( new { message = "Reset your password.", data = new {UserId = userId, Token = token} });
+    }
+    
+    [HttpPost("ForgotPassword")]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        try
+        {
+            await SendPasswordResetEmail(email);
+            return Ok( new { message = "Password reset email sent. Check your inbox." });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
+    }
+    
+    [HttpPost("ResetPassword")]
+    public async Task<IActionResult> ResetPassword(string userId, string token, string newPassword)
+    {
+        // Verify userId and token
+        if (userId == null || token == null)
+        {
+            return BadRequest(new { message = "Invalid reset link." });
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return BadRequest(new { message = "Invalid user." });
+        }
+        
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (result.Succeeded)
+        {
+            return Ok(new { message = "Password reset successful." });
+        }
+
+        return BadRequest(new { message = "Password reset failed." });
     }
     
     [HttpPost("Login")]
@@ -84,7 +135,7 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new { message = "Login failed, invalid email or password." });
         }
 
         var result = await _authenticationService.LoginAsync(request.Email, request.Password);
@@ -92,10 +143,10 @@ public class AuthController : ControllerBase
         if (!result.Success)
         {
             AddErrors(result);
-            return BadRequest(ModelState);
+            return BadRequest(new { message = ExtractErrorMessageFromModelState(ModelState) });
         }
 
-        return Ok(new AuthResponse(result.Email, result.UserName, result.Token));
+        return Ok(new { message = "Login successful", data = new AuthResponse(result.Email, result.UserName, result.Token) });
     }
 
     private void AddErrors(AuthResult result)
@@ -106,21 +157,21 @@ public class AuthController : ControllerBase
         }
     }
 
-    private async Task SendEmail(RegistrationRequest request)
+    private async Task SendEmailConfirmation(string email)
     {
         try
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await _userManager.FindByEmailAsync(email);
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action(
                 "ConfirmEmail",
                 "Auth",
-                new { userId = user.Id, token = token },
+                new { userId = user.Id, token },
                 Request.Scheme,
                 Request.Host.ToString()
             );
 
-            await _emailSender.SendEmailAsync(request.Email, "Confirm your email",
+            await _emailSender.SendEmailAsync(email, "Confirm your email",
                 $"Please confirm your email by clicking this link: <a href='{confirmationLink}'>link</a>");
         }
         catch (RequestFailedException e)
@@ -133,5 +184,46 @@ public class AuthController : ControllerBase
             Console.WriteLine(e);
             throw new Exception("Register failed. An error occured.");
         }
+    }
+    
+    private async Task SendPasswordResetEmail(string email)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                throw new Exception();
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = Url.Action("ResetPassword", "Auth", new { userId = user.Id, token }, Request.Scheme);
+
+
+            await _emailSender.SendEmailAsync(email, "Reset your password.",
+                $"Please reset your password by clicking this link: <a href='{resetLink}'>link</a>");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Password reset email sent. Check your inbox.");
+        }
+    }
+
+    private string ExtractErrorMessageFromModelState(ModelStateDictionary modelState)
+    {
+        List<string> errorMessages = new List<string>();
+        
+        foreach (var keyValuePair in modelState)
+        {
+            if (keyValuePair.Value.Errors.Any())
+            {
+                foreach (var error in keyValuePair.Value.Errors)
+                {
+                    errorMessages.Add(error.ErrorMessage);
+                }
+            }
+        }
+        
+        return string.Join("; ", errorMessages);
     }
 }
