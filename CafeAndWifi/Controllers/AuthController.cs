@@ -1,9 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
 using Azure;
 using CafeAndWifi.Model.AuthenticationModels;
 using CafeAndWifi.Services.Authentication;
 using CafeAndWifi.Services.EmailService;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -17,12 +18,14 @@ public class AuthController : ControllerBase
     private readonly IAuthService _authenticationService;
     private readonly IEmailSender _emailSender;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IAuthService authenticationService, IEmailSender emailSender, UserManager<IdentityUser> userManager)
+    public AuthController(IAuthService authenticationService, IEmailSender emailSender, UserManager<IdentityUser> userManager, IConfiguration configuration)
     {
         _authenticationService = authenticationService;
         _emailSender = emailSender;
         _userManager = userManager;
+        _configuration = configuration;
     }
 
     [HttpPost("Register")]
@@ -94,11 +97,11 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("ForgotPassword")]
-    public async Task<IActionResult> ForgotPassword(string email)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
     {
         try
         {
-            await SendPasswordResetEmail(email);
+            await SendPasswordResetEmail(forgotPasswordRequest.Email);
             return Ok( new { message = "Password reset email sent. Check your inbox." });
         }
         catch (Exception e)
@@ -109,21 +112,21 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("ResetPassword")]
-    public async Task<IActionResult> ResetPassword(string userId, string token, string newPassword)
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
         // Verify userId and token
-        if (userId == null || token == null)
+        if (request.UserId == null || request.Token == null)
         {
             return BadRequest(new { message = "Invalid reset link." });
         }
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null)
         {
             return BadRequest(new { message = "Invalid user." });
         }
         
-        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
         if (result.Succeeded)
         {
             return Ok(new { message = "Password reset successful." });
@@ -141,7 +144,6 @@ public class AuthController : ControllerBase
         }
 
         var result = await _authenticationService.LoginAsync(request.Email, request.Password);
-
         if (!result.Success)
         {
             AddErrors(result);
@@ -150,22 +152,24 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Login successful", data = new AuthResponse(result.Email, result.UserName, result.Token) });
     }
-    
+
     [HttpPost("Validate")]
     public async Task<IActionResult> ValidateToken([FromBody] TokenValidationRequest request)
     {
-        Console.WriteLine($"Okkadsadasd {request}");
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.ReadToken(request.Token) as JwtSecurityToken;
-            
+
             if (token.ValidTo < DateTime.UtcNow)
             {
                 return BadRequest(new { message = "Token expired" });
             }
-            
-            return Ok(new { message = "Token is valid" });
+            var username = token.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
+            var email = token.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
+            var role = token.Claims.First(claim => claim.Type == ClaimTypes.Role).Value;
+            var userId = token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            return Ok(new { message = "Token is valid", data = new {username, email, userId, role} });
         }
         catch (Exception ex)
         {
@@ -221,7 +225,13 @@ public class AuthController : ControllerBase
                 throw new Exception();
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = Url.Action("ResetPassword", "Auth", new { userId = user.Id, token }, Request.Scheme);
+            
+            var frontendBaseUrl = _configuration["FrontendBaseUrl"];
+            var encodedToken = WebUtility.UrlEncode(token);
+            var resetLink = $"{frontendBaseUrl}/resetPassword?userId={user.Id}&token={encodedToken}";
+
+            await _emailSender.SendEmailAsync(email, "Reset your password.",
+                $"Please reset your password by clicking this link: <a href='{resetLink}'>link</a>");
 
 
             await _emailSender.SendEmailAsync(email, "Reset your password.",

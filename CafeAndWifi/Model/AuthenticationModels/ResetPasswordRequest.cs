@@ -1,6 +1,3 @@
 namespace CafeAndWifi.Model.AuthenticationModels;
 
-public class ResetPasswordRequest
-{
-    
-}
+public record ResetPasswordRequest(string? UserId, string? Token, string NewPassword);

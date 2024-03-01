@@ -9,6 +9,7 @@ import Logo from "../../../assets/logo.png";
 import "./Navbar.scss";
 import PrimaryButton from "../../Buttons/Primary/PrimaryButton";
 import { FormEvent } from "react";
+import { logoutUser } from "../../../service/authService";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,6 +17,10 @@ const Navbar = () => {
   const handleDataFetch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     navigate("/cafes");
+  };
+
+  const handleLogout = () => {
+    logoutUser();
   };
 
   return (
@@ -56,6 +61,11 @@ const Navbar = () => {
               <Link className="nav-link ms-4 fs-3" to="/login">
                 Login
               </Link>
+            </li>
+            <li className="nav-item">
+              <button className="nav-link ms-4 fs-3" onClick={handleLogout}>
+                Logout
+              </button>
             </li>
             <li className="nav-item">
               <Link className="nav-link ms-4 fs-3" to="/create">

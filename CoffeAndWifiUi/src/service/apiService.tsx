@@ -16,8 +16,10 @@ export const fetchData = async ({ path, method, body }: RequestOptions) => {
     if (body !== null && body !== undefined) {
       options.body = JSON.stringify(body);
     }
+    
     const response = await fetch(url, options);
     const data = await response.json();
+    
     const returnObj: CafeListResponse = {
       ok: response.ok,
       message: data.message,

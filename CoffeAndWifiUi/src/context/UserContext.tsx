@@ -8,17 +8,25 @@ import {
   SetStateAction,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { checkAuthStatus, logoutUser } from "../service/authService";
+import { getAuth, logoutUser } from "../service/authService";
 
 interface userProps {
-  username: string;
   email: string;
+  role: string;
+  userId: string;
+  username: string;
+}
+
+interface authProps {
+  data: userProps;
+  message: string;
+  ok: boolean;
 }
 
 interface IUserContext {
-  currentUser: userProps | null; // Define your currentUser type here
+  currentUser: authProps | null; // Define your currentUser type here
   loading: boolean;
-  setCurrentUser: Dispatch<SetStateAction<userProps | null>>; // Define the type of setCurrentUser
+  setCurrentUser: Dispatch<SetStateAction<authProps | null>>; // Define the type of setCurrentUser
 }
 
 interface UserProviderProps {
@@ -32,23 +40,27 @@ export const UserContext = createContext<IUserContext>({
 });
 
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<authProps | null>(null);
   const [loading, setLoading] = useState(true);
   const value = { currentUser, loading, setCurrentUser };
   const navigate = useNavigate();
 
   const fetchAuthStatus = async () => {
     try {
-      const isAuthenticated = await checkAuthStatus();
-      if (!isAuthenticated) {
+      const userAuth = await getAuth();
+      if (!userAuth) {
         logoutUser();
         setCurrentUser(null);
+      } else {
+        const userInfo = userAuth as authProps;
+        setCurrentUser(userInfo);
       }
-      setLoading(false);
     } catch (error) {
+      logoutUser();
+      setCurrentUser(null);
       console.error("Error while fetching authentication status:", error);
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {

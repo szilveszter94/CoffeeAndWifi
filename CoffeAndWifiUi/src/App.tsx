@@ -8,6 +8,8 @@ import Register from "./components/Authentication/Register/Register";
 import "./App.scss";
 import SingleCafe from "./components/Pages/Cafes/SingleCafe/SingleCafe";
 import Editor from "./components/Pages/Editor/Editor";
+import ForgotPassword from "./components/Authentication/ForgotPassword/ForgotPassword";
+import ResetPassword from "./components/Authentication/ResetPassword/ResetPassword";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/editor/:id" element={<Editor />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/resetPassword" element={<ResetPassword />} />
       </Routes>
     </>
   );
