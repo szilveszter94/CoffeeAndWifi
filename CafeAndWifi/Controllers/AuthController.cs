@@ -81,21 +81,21 @@ public class AuthController : ControllerBase
         }
     }
     
-    [HttpGet("ConfirmEmail")]
-    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    [HttpPost("ConfirmEmail")]
+    public async Task<IActionResult> ConfirmEmail([FromBody] EmailConfirmationRequest request)
     {
-        if (userId == null || token == null)
+        if (request.UserId == null || request.Token == null)
         {
             return BadRequest(new {message = "Invalid credentials."});
         }
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null)
         {
             return BadRequest(new {message = "Invalid user id."});
         }
         
-        var result = await _userManager.ConfirmEmailAsync(user, token);
+        var result = await _userManager.ConfirmEmailAsync(user, request.Token);
         if (result.Succeeded)
         {
             return Ok(new {message = "Successfully confirmed."});
@@ -225,14 +225,11 @@ public class AuthController : ControllerBase
             var user = await _userManager.FindByEmailAsync(email);
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             
-            var confirmationLink = Url.Action(
-                "ConfirmEmail",
-                "Auth",
-                new { userId = user.Id, token },
-                Request.Scheme,
-                Request.Host.ToString()
-            );
-
+            var frontendBaseUrl = _configuration["FrontendBaseUrl"];
+            var encodedToken = WebUtility.UrlEncode(token);
+            
+            var confirmationLink = $"{frontendBaseUrl}/confirmEmail?userId={user.Id}&token={encodedToken}";
+            
             await _emailSender.SendEmailAsync(email, "Confirm your email",
                 $"Please confirm your email by clicking this link: <a href='{confirmationLink}'>link</a>");
         }

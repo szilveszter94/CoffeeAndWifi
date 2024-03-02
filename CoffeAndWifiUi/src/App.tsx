@@ -10,6 +10,7 @@ import ActivateAccount from "./components/Authentication/ActivateAccount/Activat
 import LoginRegister from "./components/Authentication/LoginRegister/LoginRegister";
 
 import "./App.scss";
+import ConfirmEmail from "./components/Authentication/ConfirmEmail/ConfirmEmail";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
         <Route path="/activateAccount" element={<ActivateAccount />} />
+        <Route path="/confirmEmail" element={<ConfirmEmail />} />
       </Routes>
     </>
   );

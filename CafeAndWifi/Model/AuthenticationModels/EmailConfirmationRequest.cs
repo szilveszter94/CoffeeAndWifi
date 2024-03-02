@@ -1,6 +1,3 @@
 namespace CafeAndWifi.Model.AuthenticationModels;
 
-public class EmailConfirmationRequest
-{
-    
-}
+public record EmailConfirmationRequest(string UserId, string Token);
