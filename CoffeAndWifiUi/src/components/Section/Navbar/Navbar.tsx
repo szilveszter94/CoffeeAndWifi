@@ -103,7 +103,7 @@ const Navbar = () => {
               </span>
             ) : (
               <span className="nav-item">
-                <Link className="nav-link ms-4 fs-3" to="/loginregister">
+                <Link className="nav-link ms-4 fs-3" to="/loginRegister">
                   Register/Login
                 </Link>
               </span>

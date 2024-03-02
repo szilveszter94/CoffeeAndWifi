@@ -224,6 +224,7 @@ public class AuthController : ControllerBase
         {
             var user = await _userManager.FindByEmailAsync(email);
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            
             var confirmationLink = Url.Action(
                 "ConfirmEmail",
                 "Auth",

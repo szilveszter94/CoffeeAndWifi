@@ -21,7 +21,7 @@ function App() {
         <Route path="/cafe/:id" element={<SingleCafe />} />
         <Route path="/create" element={<Editor />} />
         <Route path="/editor/:id" element={<Editor />} />
-        <Route path="/loginregister" element={<LoginRegister />} />
+        <Route path="/loginRegister" element={<LoginRegister />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
         <Route path="/activateAccount" element={<ActivateAccount />} />
