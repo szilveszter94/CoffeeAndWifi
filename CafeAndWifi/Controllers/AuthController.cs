@@ -62,6 +62,25 @@ public class AuthController : ControllerBase
         }
     }
     
+    [HttpPost("ActivateEmail")]
+    public async Task<ActionResult<RegistrationResponse>> ActivateEmail(ForgotEmailRequest emailRequest)
+    {
+        try
+        {
+            await SendEmailConfirmation(emailRequest.Email);
+            return CreatedAtAction(nameof(Register),
+                new
+                {
+                    message = "Confirmation email sent. Check your inbox and confirm your account.",
+                });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
+    }
+    
     [HttpGet("ConfirmEmail")]
     public async Task<IActionResult> ConfirmEmail(string userId, string token)
     {

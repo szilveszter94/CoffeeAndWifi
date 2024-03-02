@@ -1,3 +1,3 @@
 namespace CafeAndWifi.Model.AuthenticationModels;
 
-public record ForgotEmailRequest();
+public record ForgotEmailRequest(string Email);

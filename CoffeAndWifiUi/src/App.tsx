@@ -6,6 +6,7 @@ import SingleCafe from "./components/Pages/Cafes/SingleCafe/SingleCafe";
 import Editor from "./components/Pages/Editor/Editor";
 import ForgotPassword from "./components/Authentication/ForgotPassword/ForgotPassword";
 import ResetPassword from "./components/Authentication/ResetPassword/ResetPassword";
+import ActivateAccount from "./components/Authentication/ActivateAccount/ActivateAccount";
 import LoginRegister from "./components/Authentication/LoginRegister/LoginRegister";
 
 import "./App.scss";
@@ -23,6 +24,7 @@ function App() {
         <Route path="/loginregister" element={<LoginRegister />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
+        <Route path="/activateAccount" element={<ActivateAccount />} />
       </Routes>
     </>
   );

@@ -52,11 +52,12 @@ const Login = () => {
         navigate("/");
         return;
       } else {
-        setLocalSnackbar({
+        setSnackbar({
           open: true,
           message: response.message,
           type: "error",
         });
+        navigate("/activateAccount")
       }
     } catch (error) {
       setLocalSnackbar({
