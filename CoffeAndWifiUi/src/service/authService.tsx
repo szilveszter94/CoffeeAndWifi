@@ -1,10 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fetchData } from "./apiService";
 
+interface userProps {
+  email: string;
+  role: string;
+  userId: string;
+  username: string;
+}
+
+export interface authProps {
+  data: userProps;
+  message: string;
+  ok: boolean;
+}
+
 export const logoutUser = async () => {
   try {
     localStorage.removeItem("accessToken");
-    console.log("Logout successful.");
+    return true;
   } catch (error) {
     console.log("Failed to logout.");
     return false;
@@ -20,13 +33,11 @@ export const getAuth = async () => {
       method: "POST",
       body: { token },
     });
+    
+    return userAuth;
 
-    if (userAuth.ok) {
-      return userAuth;
-    }
-    return false;
   } catch (error) {
-    console.error("Error validating token.");
+    console.error("Error. Server not responding.");
     return false;
   }
 };

@@ -8,19 +8,41 @@ import {
 import Logo from "../../../assets/logo.png";
 import "./Navbar.scss";
 import PrimaryButton from "../../Buttons/Primary/PrimaryButton";
-import { FormEvent } from "react";
+import { FormEvent, useContext } from "react";
 import { logoutUser } from "../../../service/authService";
+import { UserContext } from "../../../context/UserContext";
+import { SnackbarContext } from "../../../context/SnackbarContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { setSnackbar } = useContext(SnackbarContext);
 
   const handleDataFetch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     navigate("/cafes");
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    const isLoggedOut = await logoutUser();
+    if (isLoggedOut) {
+      setSnackbar({
+        open: true,
+        message: "Successfully logged out.",
+        type: "info",
+      });
+      setCurrentUser(null);
+      navigate("/");
+      return;
+    } else {
+      setSnackbar({
+        open: true,
+        message: "Failed to log out.",
+        type: "info",
+      });
+      navigate("/");
+      return;
+    }
   };
 
   return (
@@ -53,21 +75,6 @@ const Navbar = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link ms-4 fs-3" to="/register">
-                Register
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link ms-4 fs-3" to="/login">
-                Login
-              </Link>
-            </li>
-            <li className="nav-item">
-              <button className="nav-link ms-4 fs-3" onClick={handleLogout}>
-                Logout
-              </button>
-            </li>
-            <li className="nav-item">
               <Link className="nav-link ms-4 fs-3" to="/create">
                 Add new cafe <FontAwesomeIcon icon={faPlusCircle} />
               </Link>
@@ -87,6 +94,21 @@ const Navbar = () => {
               className="fs-3"
             ></PrimaryButton>
           </form>
+          <div className="me-2 mb-2">
+            {currentUser ? (
+              <span className="nav-item">
+                <button className="nav-link ms-4 fs-3" onClick={handleLogout}>
+                  Logout
+                </button>
+              </span>
+            ) : (
+              <span className="nav-item">
+                <Link className="nav-link ms-4 fs-3" to="/loginregister">
+                  Register/Login
+                </Link>
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </nav>

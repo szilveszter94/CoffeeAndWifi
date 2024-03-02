@@ -34,7 +34,7 @@ export interface CafeProps {
   comments: CommentProps[];
 }
 
-export interface CafeListResponse {
+export interface BaseResponse {
   ok: boolean;
   data: CafeProps[];
   message: string;

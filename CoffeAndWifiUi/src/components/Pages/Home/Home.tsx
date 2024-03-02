@@ -5,10 +5,14 @@ import { useEffect, useState } from "react";
 import { Images } from "../../../utils/imageImport";
 import Loading from "../Loading/Loading";
 import "./Home.scss";
+import { SnackbarContext } from "../../../context/SnackbarContext";
+import { useContext } from "react";
+import SnackBar from "../../Snackbar/Snackbar";
 
 const Home = () => {
   const [images, setImages] = useState<Images | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
+  const { snackbar, setSnackbar } = useContext(SnackbarContext);
 
   useEffect(() => {
     const loadImages = async () => {
@@ -20,12 +24,26 @@ const Home = () => {
     loadImages();
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setSnackbar({
+        open: false,
+        message: "",
+        type: undefined,
+      });
+    }, 6000);
+  }, [setSnackbar]);
+
   if (loading) {
     return <Loading />;
   }
 
   return (
     <div className="home-container vh-100">
+      <SnackBar
+        {...snackbar}
+        setOpen={() => setSnackbar({ ...snackbar, open: false })}
+      />
       <Navbar />
       <div className="home-content">
         <div className="container mt-5">

@@ -142,6 +142,17 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { message = "Login failed, invalid email or password." });
         }
+        
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return BadRequest(new { message = "Email not found." });
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            return StatusCode(403, new { message = "Activate your account." });
+        }
 
         var result = await _authenticationService.LoginAsync(request.Email, request.Password);
         if (!result.Success)
@@ -165,11 +176,13 @@ public class AuthController : ControllerBase
             {
                 return BadRequest(new { message = "Token expired" });
             }
+            
             var username = token.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
             var email = token.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
             var role = token.Claims.First(claim => claim.Type == ClaimTypes.Role).Value;
             var userId = token.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            return Ok(new { message = "Token is valid", data = new {username, email, userId, role} });
+            
+            return Ok(new { message = "Token is valid", data = new {username, email, userId, role } });
         }
         catch (Exception ex)
         {

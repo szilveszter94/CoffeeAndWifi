@@ -1,37 +1,72 @@
 import { useState, ChangeEvent, FormEvent, useContext } from "react";
 import { fetchData } from "../../../service/apiService";
 import { LoginResponse } from "../../../service/apiInterfaces";
-import { UserContext } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import InputComponent from "../../FormComponents/InputComponent";
+import SecondaryButton from "../../Buttons/Secondary/SecondaryButton";
+import { SnackbarContext } from "../../../context/SnackbarContext";
+import Loading from "../../Pages/Loading/Loading";
+import { SnackbarContextValue } from "../../../context/SnackbarContext";
+import SnackBar from "../../Snackbar/Snackbar";
 
 const sampleInfo = {
-  password: "",
-  email: "",
+  loginPassword: "",
+  loginEmail: "",
 };
 
 const Login = () => {
   const [userInfo, setUserInfo] = useState(sampleInfo);
-  const { currentUser } = useContext(UserContext);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { setSnackbar } = useContext(SnackbarContext);
+  const [localSnackbar, setLocalSnackbar] = useState<
+    SnackbarContextValue["snackbar"]
+  >({
+    open: false,
+    message: "",
+    type: undefined,
+  });
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const response = await fetchData({
         path: "/Auth/Login",
         method: "POST",
-        body: userInfo,
+        body: {
+          password: userInfo.loginPassword,
+          email: userInfo.loginEmail,
+        },
       });
+
       if (response.ok) {
         const loginData = response as LoginResponse;
         localStorage.setItem("accessToken", loginData.data.token);
-        console.log("Login successful.");
+        setSnackbar({
+          open: true,
+          message: response.message,
+          type: "success",
+        });
+
+        navigate("/");
+        return;
       } else {
-        console.log(response.message);
+        setLocalSnackbar({
+          open: true,
+          message: response.message,
+          type: "error",
+        });
       }
     } catch (error) {
-      console.log(error);
+      setLocalSnackbar({
+        open: true,
+        message: "Server not responding.",
+        type: "error",
+      });
     }
+    setUserInfo(sampleInfo);
+    setLoading(false);
   };
 
   const handleResetPassword = () => {
@@ -45,28 +80,43 @@ const Login = () => {
     setUserInfo({ ...userInfo, [name]: value });
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div>
+      <SnackBar
+        {...localSnackbar}
+        setOpen={() => setLocalSnackbar({ ...localSnackbar, open: false })}
+      />
       <h1>Login</h1>
-      <h2 className="text-light">
-        {" "}
-        Hello {currentUser && currentUser.data.username}
-      </h2>
       <form onSubmit={handleLogin}>
-        <input
-          name="email"
-          placeholder="Email"
+        <InputComponent
+          name="loginEmail"
+          value={userInfo.loginEmail}
           type="email"
+          placeholder="Email"
           onChange={handleChange}
         />
-        <input
-          name="password"
-          placeholder="password"
+        <InputComponent
+          name="loginPassword"
+          value={userInfo.loginPassword}
           type="password"
+          placeholder="Password"
           onChange={handleChange}
         />
-        <button type="submit">Login</button>
-        <button onClick={handleResetPassword}>Reset password</button>
+        <div className="text-end">
+          <SecondaryButton
+            text="Forgot password?"
+            className="fs-5 mt-3"
+            type="submit"
+            onClick={handleResetPassword}
+          />
+        </div>
+        <div className="text-center">
+          <SecondaryButton text="Login" className="fs-2 mt-5" type="submit" />
+        </div>
       </form>
     </div>
   );

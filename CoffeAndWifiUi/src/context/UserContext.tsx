@@ -9,19 +9,8 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, logoutUser } from "../service/authService";
+import { authProps } from "../service/authService";
 
-interface userProps {
-  email: string;
-  role: string;
-  userId: string;
-  username: string;
-}
-
-interface authProps {
-  data: userProps;
-  message: string;
-  ok: boolean;
-}
 
 interface IUserContext {
   currentUser: authProps | null; // Define your currentUser type here
@@ -47,13 +36,13 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
   const fetchAuthStatus = async () => {
     try {
-      const userAuth = await getAuth();
-      if (!userAuth) {
+      const userAuth = await getAuth() as authProps;
+
+      if (!userAuth.ok) {
         logoutUser();
         setCurrentUser(null);
       } else {
-        const userInfo = userAuth as authProps;
-        setCurrentUser(userInfo);
+        setCurrentUser(userAuth);
       }
     } catch (error) {
       logoutUser();

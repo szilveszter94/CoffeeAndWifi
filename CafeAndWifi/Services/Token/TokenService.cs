@@ -45,6 +45,7 @@ public class TokenService : ITokenService
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Name, user.UserName),
                 new(ClaimTypes.Email, user.Email),
+                new("userEmailConfirmed", user.EmailConfirmed.ToString())
             };
 
             if (role != null)

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RequestOptions, CafeListResponse } from "./apiInterfaces";
+import { RequestOptions, BaseResponse } from "./apiInterfaces";
 const baseUrl = "https://localhost:7079";
 
 export const fetchData = async ({ path, method, body }: RequestOptions) => {
@@ -20,7 +20,7 @@ export const fetchData = async ({ path, method, body }: RequestOptions) => {
     const response = await fetch(url, options);
     const data = await response.json();
     
-    const returnObj: CafeListResponse = {
+    const returnObj: BaseResponse = {
       ok: response.ok,
       message: data.message,
       data: data.data,
