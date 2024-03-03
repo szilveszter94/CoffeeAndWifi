@@ -1,5 +1,6 @@
 import { CafeProps } from "../../../../service/apiInterfaces";
 import { createGoogleMapFromLatLong } from "../../../../utils/helperFunctions";
+import CreateCommentComponent from "../Comments/CreateCommentComponent";
 import "./CafeDetails.scss";
 
 const MoreCafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
@@ -18,14 +19,19 @@ const MoreCafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
           ></iframe>
         </div>
       </div>
-      <h4>
+      <div>
         <h2 className="my-4">Comments</h2>
-        {cafe.comments.map((comment) => (
-          <h5>
-            {comment.text} {comment.date}
-          </h5>
-        ))}
-      </h4>
+        {cafe.comments ? (
+          cafe.comments.map((comment) => (
+            <h5>
+              {comment.text} {comment.date}
+            </h5>
+          ))
+        ) : (
+          <h5>No comments.</h5>
+        )}
+      </div>
+      <CreateCommentComponent />
     </div>
   );
 };

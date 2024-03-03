@@ -20,8 +20,6 @@ AddDbContext();
 AddAuthentication();
 AddIdentity();
 
-services.AddSingleton<ICafeRepository, CafeRepository>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,6 +58,8 @@ void AddServices()
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddTransient<IEmailSender, EmailSender>();
+        services.AddDbContext<CafeContext>();
+        services.AddScoped<ICafeRepository, CafeRepository>();
     }
     
 void ConfigureSwagger()

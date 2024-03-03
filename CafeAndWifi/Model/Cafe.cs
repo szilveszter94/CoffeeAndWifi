@@ -19,5 +19,5 @@ public class Cafe : ICafe
     public bool HasSockets { get; init; }
     public bool CanTakeCalls { get; init; }
     public bool CanPayWithCard { get; init; }
-    public List<Comment> Comments  { get; set; }
+    public List<Comment> Comments  { get; init; }
 }

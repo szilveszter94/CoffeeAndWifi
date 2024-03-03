@@ -3,7 +3,7 @@ import Home from "./components/Pages/Home/Home";
 import About from "./components/Pages/About/About";
 import Cafes from "./components/Pages/Cafes/CafeList/Cafes";
 import SingleCafe from "./components/Pages/Cafes/SingleCafe/SingleCafe";
-import Editor from "./components/Pages/Editor/Editor";
+import CafeEditor from "./components/Pages/Editor/CafeEditor";
 import ForgotPassword from "./components/Authentication/ForgotPassword/ForgotPassword";
 import ResetPassword from "./components/Authentication/ResetPassword/ResetPassword";
 import ActivateAccount from "./components/Authentication/ActivateAccount/ActivateAccount";
@@ -20,8 +20,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/cafes" element={<Cafes />} />
         <Route path="/cafe/:id" element={<SingleCafe />} />
-        <Route path="/create" element={<Editor />} />
-        <Route path="/editor/:id" element={<Editor />} />
+        <Route path="/create" element={<CafeEditor />} />
+        <Route path="/editor/:id" element={<CafeEditor />} />
         <Route path="/loginRegister" element={<LoginRegister />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/resetPassword" element={<ResetPassword />} />

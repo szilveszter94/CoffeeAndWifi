@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchData } from "../../../../service/apiService";
 import Loading from "../../Loading/Loading";
-import { CafeProps, CafeListResponse } from "../../../../service/apiInterfaces";
+import { CafeProps, BaseResponse } from "../../../../service/apiInterfaces";
 import Navbar from "../../../Section/Navbar/Navbar";
 import Footer from "../../../Section/Footer/Footer";
 import SecondaryButton from "../../../Buttons/Secondary/SecondaryButton";
@@ -11,11 +11,20 @@ import "./Cafes.scss";
 import CafeDetailsComponent from "../CafeDetailsComponent/CafeDetailsComponent";
 import ButtonWithIcon from "../../../Buttons/ButtonWithIcon/ButtonWithIcon";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import SnackBar from "../../../Snackbar/Snackbar";
+import { SnackbarContextValue } from "../../../../context/SnackbarContext";
 
 const Cafes = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [cafes, setCafes] = useState<CafeProps[] | undefined>(undefined);
   const navigate = useNavigate();
+  const [localSnackbar, setLocalSnackbar] = useState<
+    SnackbarContextValue["snackbar"]
+  >({
+    open: false,
+    message: "",
+    type: undefined,
+  });
 
   useEffect(() => {
     const fetchCafes = async () => {
@@ -27,13 +36,21 @@ const Cafes = () => {
           body: null,
         });
         if (response.ok) {
-          const cafeResponse = response as CafeListResponse;
+          const cafeResponse = response as BaseResponse;
           setCafes(cafeResponse.data);
         } else {
-          alert(response.message);
+          setLocalSnackbar({
+            open: true,
+            message: response.message,
+            type: "error",
+          });
         }
       } catch (error) {
-        alert("Server not responding.");
+        setLocalSnackbar({
+          open: true,
+          message: "Server not responding.",
+          type: "error",
+        });
       }
       setLoading(false);
     };
@@ -46,7 +63,7 @@ const Cafes = () => {
 
   const handleDelete = async (id: number) => {
     const shouldDelete = window.confirm("Are you sure you want to delete?");
-    if (!shouldDelete){
+    if (!shouldDelete) {
       return;
     }
     setLoading(true);
@@ -57,13 +74,26 @@ const Cafes = () => {
         body: null,
       });
       if (response.ok) {
-        const updatedCafes = cafes?.filter(cafe => cafe.id !== id);
+        const updatedCafes = cafes?.filter((cafe) => cafe.id !== id);
         setCafes(updatedCafes);
+        setLocalSnackbar({
+          open: true,
+          message: "Cafe deleted successfully",
+          type: "success",
+        });
       } else {
-        alert(response.message);
+        setLocalSnackbar({
+          open: true,
+          message: response.message,
+          type: "error",
+        });
       }
     } catch (error) {
-      alert("Server not responding.");
+      setLocalSnackbar({
+        open: true,
+        message: "Server not responding.",
+        type: "error",
+      });
     }
     setLoading(false);
   };
@@ -74,6 +104,10 @@ const Cafes = () => {
 
   return (
     <div className="cafes-container vh-100">
+      <SnackBar
+        {...localSnackbar}
+        setOpen={() => setLocalSnackbar({ ...localSnackbar, open: false })}
+      />
       <Navbar />
       <div className="cafes-content">
         <div className="container">

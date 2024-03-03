@@ -38,6 +38,7 @@ export interface BaseResponse {
   ok: boolean;
   data: CafeProps[];
   message: string;
+  status: number;
 }
 
 export interface SingleCafeResponse {
@@ -50,6 +51,7 @@ export interface LoginResponse {
   ok: boolean;
   data: loginData;
   message: string;
+  status: number;
 }
 
 interface loginData {

@@ -38,11 +38,10 @@ const Login = () => {
           password: userInfo.loginPassword,
           email: userInfo.loginEmail,
         },
-      });
+      }) as LoginResponse;
 
       if (response.ok) {
-        const loginData = response as LoginResponse;
-        localStorage.setItem("accessToken", loginData.data.token);
+        localStorage.setItem("accessToken", response.data.token);
         setSnackbar({
           open: true,
           message: response.message,
@@ -57,7 +56,9 @@ const Login = () => {
           message: response.message,
           type: "error",
         });
-        navigate("/activateAccount")
+        if (response.status === 403) {
+          navigate("/activateAccount");
+        }
       }
     } catch (error) {
       setLocalSnackbar({

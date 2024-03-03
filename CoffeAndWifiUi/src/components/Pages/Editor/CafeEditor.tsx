@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState, useContext } from "react";
 import Navbar from "../../Section/Navbar/Navbar";
 import Footer from "../../Section/Footer/Footer";
 import {
@@ -8,7 +8,7 @@ import {
   faPlug,
   faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
-import "./Editor.scss";
+import "./CafeEditor.scss";
 import PrimaryButton from "../../Buttons/Primary/PrimaryButton";
 import { generateRatings, generateSeats } from "../../../utils/generateOptions";
 import InputComponent from "../../FormComponents/InputComponent";
@@ -16,8 +16,11 @@ import SelectOptionComponent from "../../FormComponents/SelectOptionComponent";
 import CheckboxComponent from "../../FormComponents/CheckboxComponent";
 import { fetchData } from "../../../service/apiService";
 import { CafeProps, SingleCafeResponse } from "../../../service/apiInterfaces";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Loading from "../Loading/Loading";
+import { SnackbarContextValue } from "../../../context/SnackbarContext";
+import SnackBar from "../../Snackbar/Snackbar";
+import { SnackbarContext } from "../../../context/SnackbarContext";
 
 const sampleCafe: CafeProps = {
   id: 0,
@@ -40,10 +43,19 @@ const sampleCafe: CafeProps = {
   comments: [],
 };
 
-const Editor = () => {
+const CafeEditor = () => {
   const [cafe, setCafe] = useState(sampleCafe);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { id } = useParams();
+  const { setSnackbar } = useContext(SnackbarContext);
+  const [localSnackbar, setLocalSnackbar] = useState<
+    SnackbarContextValue["snackbar"]
+  >({
+    open: false,
+    message: "",
+    type: undefined,
+  });
 
   useEffect(() => {
     const loadEditObject = async () => {
@@ -56,12 +68,23 @@ const Editor = () => {
         });
         if (response.ok) {
           const cafeResponse = response as SingleCafeResponse;
+          if (!cafeResponse.data.comments) {
+            cafeResponse.data.comments = [];
+          }
           setCafe(cafeResponse.data);
         } else {
-          alert(response.message);
+          setLocalSnackbar({
+            open: true,
+            message: response.message,
+            type: "error",
+          });
         }
       } catch (error) {
-        alert("Server not responding.");
+        setLocalSnackbar({
+          open: true,
+          message: "Server not responding.",
+          type: "error",
+        });
       }
       setLoading(false);
     };
@@ -98,13 +121,31 @@ const Editor = () => {
         body: cafe,
       });
       if (response.ok) {
-        const newCafe = response as SingleCafeResponse;
-        console.log(newCafe);
+        setSnackbar({
+          open: true,
+          message: response.message,
+          type: "success",
+        });
+        if (id) {
+          navigate(`/cafe/${id}`);
+        } else {
+          navigate("/cafes");
+        }
+
+        return;
       } else {
-        alert(response.message);
+        setLocalSnackbar({
+          open: true,
+          message: response.message,
+          type: "error",
+        });
       }
     } catch (error) {
-      alert("Server not responding.");
+      setLocalSnackbar({
+        open: true,
+        message: "Server not responding.",
+        type: "error",
+      });
     }
     setLoading(false);
   };
@@ -115,6 +156,10 @@ const Editor = () => {
 
   return (
     <div className="editor-container vh-100">
+      <SnackBar
+        {...localSnackbar}
+        setOpen={() => setLocalSnackbar({ ...localSnackbar, open: false })}
+      />
       <Navbar />
       <div className="editor-content">
         <div className="mt-3 text-center">
@@ -280,4 +325,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default CafeEditor;
