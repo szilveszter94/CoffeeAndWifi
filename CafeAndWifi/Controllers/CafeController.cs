@@ -1,4 +1,5 @@
 using CafeAndWifi.Model;
+using CafeAndWifi.Model.AuthenticationModels;
 using CafeAndWifi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,6 +61,21 @@ public class CafeController : ControllerBase
         {
             Console.WriteLine(e);
             return BadRequest(new { message = "Cafe not created." });
+        }
+    }
+    
+    [HttpPost("Comment")]
+    public ActionResult<Cafe> AddComment(CommentRequest request)
+    {
+        try
+        {
+            var result = _cafeRepository.AddComment(request);
+            return Ok(new { message = "Comment submitted.", data = result });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = "Comment not submitted." });
         }
     }
     

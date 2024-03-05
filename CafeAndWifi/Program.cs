@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using CafeAndWifi.Context;
 using CafeAndWifi.Repository;
 using CafeAndWifi.Services.Authentication;
@@ -53,7 +54,11 @@ app.Run();
 
 void AddServices()
     {
-        services.AddControllers();
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
         services.AddEndpointsApiExplorer();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();

@@ -46,7 +46,11 @@ const SingleCafe = () => {
         const cafeResponse = response as SingleCafeResponse;
         setCafe(cafeResponse.data);
       } else {
-        alert(response.message);
+        setSnackbar({
+          open: true,
+          message: response.message,
+          type: "error",
+        });
       }
       setLoading(false);
     };
@@ -82,7 +86,7 @@ const SingleCafe = () => {
               />
             </div>
             {cafe && <CafeDetailsComponent cafe={cafe} />}
-            {cafe && <MoreCafeDetailsComponent cafe={cafe} />}
+            {cafe && <MoreCafeDetailsComponent cafe={cafe} setCafe={setCafe} />}
           </div>
         </div>
       </div>

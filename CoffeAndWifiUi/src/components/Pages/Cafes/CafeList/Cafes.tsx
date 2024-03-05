@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchData } from "../../../../service/apiService";
 import Loading from "../../Loading/Loading";
@@ -13,10 +13,12 @@ import ButtonWithIcon from "../../../Buttons/ButtonWithIcon/ButtonWithIcon";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import SnackBar from "../../../Snackbar/Snackbar";
 import { SnackbarContextValue } from "../../../../context/SnackbarContext";
+import { SnackbarContext } from "../../../../context/SnackbarContext";
 
 const Cafes = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [cafes, setCafes] = useState<CafeProps[] | undefined>(undefined);
+  const { snackbar, setSnackbar } = useContext(SnackbarContext);
   const navigate = useNavigate();
   const [localSnackbar, setLocalSnackbar] = useState<
     SnackbarContextValue["snackbar"]
@@ -56,6 +58,16 @@ const Cafes = () => {
     };
     fetchCafes();
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSnackbar({
+        open: false,
+        message: "",
+        type: undefined,
+      });
+    }, 6000);
+  }, [setSnackbar]);
 
   const handleShowDetails = (id: number) => {
     navigate(`/cafe/${id}`);
@@ -107,6 +119,10 @@ const Cafes = () => {
       <SnackBar
         {...localSnackbar}
         setOpen={() => setLocalSnackbar({ ...localSnackbar, open: false })}
+      />
+      <SnackBar
+        {...snackbar}
+        setOpen={() => setSnackbar({ ...snackbar, open: false })}
       />
       <Navbar />
       <div className="cafes-content">

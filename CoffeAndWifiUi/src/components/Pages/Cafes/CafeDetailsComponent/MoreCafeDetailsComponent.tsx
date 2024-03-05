@@ -1,9 +1,15 @@
+import { Dispatch, SetStateAction } from "react";
 import { CafeProps } from "../../../../service/apiInterfaces";
 import { createGoogleMapFromLatLong } from "../../../../utils/helperFunctions";
 import CreateCommentComponent from "../Comments/CreateCommentComponent";
 import "./CafeDetails.scss";
 
-const MoreCafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
+export interface cafeStateProps {
+  cafe: CafeProps;
+  setCafe: Dispatch<SetStateAction<CafeProps | undefined>>;
+}
+
+const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
   return (
     <div>
       <hr />
@@ -23,7 +29,7 @@ const MoreCafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
         <h2 className="my-4">Comments</h2>
         {cafe.comments ? (
           cafe.comments.map((comment) => (
-            <h5>
+            <h5 key={comment.id}>
               {comment.text} {comment.date}
             </h5>
           ))
@@ -31,7 +37,7 @@ const MoreCafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
           <h5>No comments.</h5>
         )}
       </div>
-      <CreateCommentComponent />
+      <CreateCommentComponent cafe={cafe} setCafe={setCafe} />
     </div>
   );
 };

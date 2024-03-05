@@ -1,5 +1,7 @@
 using CafeAndWifi.Context;
 using CafeAndWifi.Model;
+using CafeAndWifi.Model.AuthenticationModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace CafeAndWifi.Repository;
 
@@ -29,7 +31,9 @@ public class CafeRepository : ICafeRepository
     {
         try
         {
-            return _context.Cafes.FirstOrDefault(cafe => cafe.Id == id);
+            return _context.Cafes
+                .Include(cafe => cafe.Comments)
+                .FirstOrDefault(cafe => cafe.Id == id);
         }
         catch (Exception e)
         {
@@ -54,6 +58,26 @@ public class CafeRepository : ICafeRepository
             throw new Exception("Cafe not created. An error occurred.");
         }
     }
+
+    public Comment AddComment(CommentRequest request)
+    {
+        try
+        {
+            var comment = new Comment
+            {
+                AuthorId = request.AuthorId, CafeId = request.CafeId, Date = request.Date, Text = request.Text
+            };
+            _context.Comments.Add(comment);
+            _context.SaveChanges();
+
+            return comment;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Comment not created. An error occurred.");
+        }
+    }
     
     public Cafe EditCafe(Cafe updatedCafe)
     {
@@ -69,7 +93,7 @@ public class CafeRepository : ICafeRepository
             _context.Entry(existingCafe).CurrentValues.SetValues(updatedCafe);
             _context.SaveChanges();
 
-            return updatedCafe;
+            return existingCafe;
         }
         catch (KeyNotFoundException e)
         {

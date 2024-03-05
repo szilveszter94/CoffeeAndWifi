@@ -1,6 +1,3 @@
 namespace CafeAndWifi.Model.AuthenticationModels;
 
-public class CommentRequest
-{
-    
-}
+public record CommentRequest(int CafeId, string AuthorId, string Text, DateTime Date);

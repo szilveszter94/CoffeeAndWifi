@@ -22,6 +22,7 @@ public class CafeContext : DbContext
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.Cafe)
             .WithMany(cafe => cafe.Comments)
-            .HasForeignKey(c => c.CafeId);
+            .HasForeignKey(c => c.CafeId)
+            .IsRequired();
     }
 }

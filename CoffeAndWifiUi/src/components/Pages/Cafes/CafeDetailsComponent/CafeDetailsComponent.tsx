@@ -50,14 +50,35 @@ const CafeDetailsComponent = ({ cafe }: { cafe: CafeProps }) => {
       </div>
       <hr />
       <div className="row d-flex justify-content-center">
-        <CafeIconComponent hasProperty={cafe.hasWifi} icon={faWifiStrong} />
-        <CafeIconComponent hasProperty={cafe.canTakeCalls} icon={faPhone} />
+        <CafeIconComponent
+          hasProperty={cafe.hasWifi}
+          icon={faWifiStrong}
+          text={cafe.hasWifi ? "Have wifi connection" : "No wifi connection"}
+        />
+        <CafeIconComponent
+          hasProperty={cafe.canTakeCalls}
+          icon={faPhone}
+          text={cafe.canTakeCalls ? "Can take calls" : "Cannot take calls"}
+        />
         <CafeIconComponent
           hasProperty={cafe.canPayWithCard}
           icon={faCreditCard}
+          text={
+            cafe.canPayWithCard
+              ? "Can pay with credit card"
+              : "Cannot pay with card"
+          }
         />
-        <CafeIconComponent hasProperty={cafe.hasToilet} icon={faToilet} />
-        <CafeIconComponent hasProperty={cafe.hasSockets} icon={faPlug} />
+        <CafeIconComponent
+          hasProperty={cafe.hasToilet}
+          icon={faToilet}
+          text={cafe.hasToilet ? "Have toilet" : "No toilet"}
+        />
+        <CafeIconComponent
+          hasProperty={cafe.hasSockets}
+          icon={faPlug}
+          text={cafe.hasSockets ? "Can charge devices" : "No plug for charging"}
+        />
       </div>
     </>
   );

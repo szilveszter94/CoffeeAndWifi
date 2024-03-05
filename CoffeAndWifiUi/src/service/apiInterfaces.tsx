@@ -1,3 +1,4 @@
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface RequestOptions {
   path: string;
@@ -37,6 +38,13 @@ export interface CafeProps {
 export interface BaseResponse {
   ok: boolean;
   data: CafeProps[];
+  message: string;
+  status: number;
+}
+
+export interface CommentResponse {
+  ok: boolean;
+  data: CommentProps;
   message: string;
   status: number;
 }
