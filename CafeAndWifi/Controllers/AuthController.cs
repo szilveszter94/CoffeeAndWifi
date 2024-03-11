@@ -8,6 +8,7 @@ using CafeAndWifi.Services.EmailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
 namespace CafeAndWifi.Controllers;
 
@@ -59,6 +60,23 @@ public class AuthController : ControllerBase
         {
             Console.WriteLine(e);
             return BadRequest(new { message = e.Message });
+        }
+    }
+
+    [HttpPost("AuthWithGoogle")]
+    public async Task<ActionResult<object>> AuthWithGoogle(TokenValidationRequest tokenRequest)
+    {
+        try
+        {
+            var payload = await VerifyTokenWithGoogle(tokenRequest.Token);
+            var authResult = await _authenticationService.GoogleLoginAsync(payload.Email, payload.Name, "User");
+            Console.WriteLine(authResult);
+            return Ok(new { message = "Login successful.", data = new AuthResponse(authResult.Email, authResult.UserName, authResult.Token) });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = "Google login failed." });
         }
     }
     
@@ -190,7 +208,6 @@ public class AuthController : ControllerBase
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.ReadToken(request.Token) as JwtSecurityToken;
-
             if (token.ValidTo < DateTime.UtcNow)
             {
                 return BadRequest(new { message = "Token expired" });
@@ -290,5 +307,20 @@ public class AuthController : ControllerBase
         }
         
         return string.Join("; ", errorMessages);
+    }
+    
+    private async Task<GooglePayload> VerifyTokenWithGoogle(string token)
+    {
+        var client = new HttpClient();
+        var response = await client.GetAsync($"https://www.googleapis.com/oauth2/v1/userinfo?access_token={token}");
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(json);
+            var payload = JsonConvert.DeserializeObject<GooglePayload>(json);
+            return payload;
+        }
+        throw new Exception("Failed to verify token with Google.");
+        
     }
 }

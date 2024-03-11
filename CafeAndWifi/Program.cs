@@ -133,6 +133,7 @@ void AddIdentity()
         .AddIdentityCore<IdentityUser>(options =>
         {
             options.SignIn.RequireConfirmedAccount = true;
+            options.User.AllowedUserNameCharacters = string.Empty;
             options.User.RequireUniqueEmail = true;
             options.Password.RequireDigit = false;
             options.Password.RequiredLength = 6;

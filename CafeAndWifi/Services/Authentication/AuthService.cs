@@ -15,6 +15,42 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
+    public async Task<AuthResult> GoogleLoginAsync(string email, string username, string role)
+    {
+        try
+        {
+            username = SanitizeUsername(username);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // User doesn't exist, create a new user
+                var newUser = new IdentityUser { UserName = username, Email = email, EmailConfirmed = true};
+                var result = await _userManager.CreateAsync(newUser);
+                if (!result.Succeeded)
+                {
+                    return FailedRegistration(result, email, username);
+                }
+            
+                await _userManager.AddToRoleAsync(newUser, role);
+            
+                var roles = await _userManager.GetRolesAsync(newUser);
+                var accessToken = _tokenService.CreateToken(newUser, roles[0]);
+                return new AuthResult(true, email, username, accessToken);
+            }
+            else
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var accessToken = _tokenService.CreateToken(user, roles[0]);
+                return new AuthResult(true, email, username, accessToken);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Google login failed.");
+        }
+    }
+
     public async Task<AuthResult> RegisterAsync(string email, string username, string password, string role)
     {
         var user = new IdentityUser { UserName = username, Email = email };
@@ -25,7 +61,7 @@ public class AuthService : IAuthService
             return FailedRegistration(result, email, username);
         }
 
-        await _userManager.AddToRoleAsync(user, role); // Adding the user to a role
+        await _userManager.AddToRoleAsync(user, role);
         return new AuthResult(true, email, username, "");
     }
 
@@ -74,5 +110,10 @@ public class AuthService : IAuthService
         var result = new AuthResult(false, email, userName, "");
         result.ErrorMessages.Add("Bad credentials", "Invalid password");
         return result;
+    }
+    
+    private string SanitizeUsername(string username)
+    {
+        return username.Replace(" ", "_");
     }
 }
