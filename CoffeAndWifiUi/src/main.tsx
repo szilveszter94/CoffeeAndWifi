@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserContext.tsx";
 import { SnackbarProvider } from "./context/SnackbarContext.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <UserProvider>
         <SnackbarProvider>
-          <App />
+          <GoogleOAuthProvider clientId="652847825811-h93tha2vb40gbjo29uu2j2kus125f9hf.apps.googleusercontent.com">
+            <App />
+          </GoogleOAuthProvider>
         </SnackbarProvider>
       </UserProvider>
     </BrowserRouter>

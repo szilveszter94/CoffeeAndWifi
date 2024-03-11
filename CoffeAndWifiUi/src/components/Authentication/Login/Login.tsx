@@ -8,6 +8,10 @@ import { SnackbarContext } from "../../../context/SnackbarContext";
 import Loading from "../../Pages/Loading/Loading";
 import { SnackbarContextValue } from "../../../context/SnackbarContext";
 import SnackBar from "../../Snackbar/Snackbar";
+import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
+import googleLogo from "../../../assets/icons/google-icon.svg";
+import "./Login.scss";
+import ButtonWithLogo from "../../Buttons/ButtonWithLogo/ButtonWithLogo";
 
 const sampleInfo = {
   loginPassword: "",
@@ -31,14 +35,14 @@ const Login = () => {
     setLoading(true);
     e.preventDefault();
     try {
-      const response = await fetchData({
+      const response = (await fetchData({
         path: "/Auth/Login",
         method: "POST",
         body: {
           password: userInfo.loginPassword,
           email: userInfo.loginEmail,
         },
-      }) as LoginResponse;
+      })) as LoginResponse;
 
       if (response.ok) {
         localStorage.setItem("accessToken", response.data.token);
@@ -82,6 +86,42 @@ const Login = () => {
     setUserInfo({ ...userInfo, [name]: value });
   };
 
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      const handleGetUserInfo = async (token: TokenResponse) => {
+        try {
+          const response = (await fetchData({
+            path: "/Auth/AuthWithGoogle",
+            method: "POST",
+            body: { token: token.access_token },
+          })) as LoginResponse;
+          console.log(response);
+
+          if (response.ok) {
+            localStorage.setItem("accessToken", response.data.token);
+            setSnackbar({
+              open: true,
+              message: response.message,
+              type: "success",
+            });
+
+            navigate("/");
+            return;
+          } else {
+            setSnackbar({
+              open: true,
+              message: response.message,
+              type: "error",
+            });
+          }
+        } catch (error) {
+          console.log("Internal server error.");
+        }
+      };
+      handleGetUserInfo(tokenResponse);
+    },
+  });
+
   if (loading) {
     return <Loading />;
   }
@@ -92,7 +132,8 @@ const Login = () => {
         {...localSnackbar}
         setOpen={() => setLocalSnackbar({ ...localSnackbar, open: false })}
       />
-      <h1>Login</h1>
+
+      <h1>Login With Email</h1>
       <form onSubmit={handleLogin}>
         <InputComponent
           name="loginEmail"
@@ -111,15 +152,24 @@ const Login = () => {
         <div className="text-end">
           <SecondaryButton
             text="Forgot password?"
-            className="fs-5 mt-3"
+            className="fs-5 mt-1 bg-none"
             type="submit"
             onClick={handleResetPassword}
           />
         </div>
         <div className="text-center">
-          <SecondaryButton text="Login" className="fs-2 mt-5" type="submit" />
+          <SecondaryButton text="Login" className="fs-2 mt-1" type="submit" />
         </div>
       </form>
+      <div className="text-center my-5">
+        <ButtonWithLogo
+          text="Sign In With Google"
+          onClick={googleLogin}
+          className="fs-3"
+          type="button"
+          googleLogo={googleLogo}
+        />
+      </div>
     </div>
   );
 };
