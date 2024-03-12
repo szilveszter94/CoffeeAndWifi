@@ -44,6 +44,8 @@ const SingleCafe = () => {
       });
       if (response.ok) {
         const cafeResponse = response as SingleCafeResponse;
+        console.log(cafeResponse);
+        
         setCafe(cafeResponse.data);
       } else {
         setSnackbar({

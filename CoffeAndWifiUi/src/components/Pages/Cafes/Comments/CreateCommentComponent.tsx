@@ -1,13 +1,29 @@
 import InputComponent from "../../../FormComponents/InputComponent";
 import SecondaryButton from "../../../Buttons/Secondary/SecondaryButton";
-import { ChangeEvent, FormEvent, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useState,
+} from "react";
 import { fetchData } from "../../../../service/apiService";
-import { cafeStateProps } from "../CafeDetailsComponent/MoreCafeDetailsComponent";
-import { CommentResponse } from "../../../../service/apiInterfaces";
+import { CafeProps, CommentResponse } from "../../../../service/apiInterfaces";
 import SnackBar from "../../../Snackbar/Snackbar";
 import { SnackbarContextValue } from "../../../../context/SnackbarContext";
+import { authProps } from "../../../../service/authService";
 
-const CreateCommentComponent = ({ cafe, setCafe }: cafeStateProps) => {
+export interface commentProps {
+  cafe: CafeProps;
+  setCafe: Dispatch<SetStateAction<CafeProps | undefined>>;
+  currentUser: authProps | null;
+}
+
+const CreateCommentComponent = ({
+  cafe,
+  setCafe,
+  currentUser,
+}: commentProps) => {
   const [comment, setComment] = useState<string>("");
   const [localSnackbar, setLocalSnackbar] = useState<
     SnackbarContextValue["snackbar"]
@@ -22,7 +38,7 @@ const CreateCommentComponent = ({ cafe, setCafe }: cafeStateProps) => {
     try {
       const body = {
         cafeId: cafe.id,
-        authorId: "bestauthorever",
+        authorId: currentUser?.data.userId,
         text: comment,
         date: new Date(),
       };

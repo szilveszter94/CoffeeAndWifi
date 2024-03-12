@@ -161,6 +161,7 @@ const Login = () => {
           <SecondaryButton text="Login" className="fs-2 mt-1" type="submit" />
         </div>
       </form>
+      <hr />
       <div className="text-center my-5">
         <ButtonWithLogo
           text="Sign In With Google"

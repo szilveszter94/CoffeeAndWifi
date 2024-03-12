@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import { CafeProps } from "../../../../service/apiInterfaces";
 import { createGoogleMapFromLatLong } from "../../../../utils/helperFunctions";
 import CreateCommentComponent from "../Comments/CreateCommentComponent";
+import { UserContext } from "../../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 import "./CafeDetails.scss";
 
 export interface cafeStateProps {
@@ -10,6 +12,13 @@ export interface cafeStateProps {
 }
 
 const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
+  const { currentUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleNavigateToLogin = () => {
+    navigate("/loginRegister");
+  };
+
   return (
     <div>
       <hr />
@@ -37,7 +46,18 @@ const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
           <h5>No comments.</h5>
         )}
       </div>
-      <CreateCommentComponent cafe={cafe} setCafe={setCafe} />
+      {currentUser ? (
+        <CreateCommentComponent
+          cafe={cafe}
+          setCafe={setCafe}
+          currentUser={currentUser}
+        />
+      ) : (
+        <div>
+          <h2>Login first to write a comment.</h2>
+          <button onClick={handleNavigateToLogin}>Login</button>
+        </div>
+      )}
     </div>
   );
 };
