@@ -17,11 +17,11 @@ public class CafeController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<Cafe> GetCafes()
+    public async Task<ActionResult<Cafe>> GetCafes()
     {
         try
         {
-            var result = _cafeRepository.GetCafes();
+            var result = await _cafeRepository.GetCafes();
             return Ok(new {data = result, message = "Cafe retrieved successfully."});
 
         }
@@ -33,11 +33,11 @@ public class CafeController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public ActionResult<Cafe> GetCafeById(int id)
+    public async Task<ActionResult<Cafe>> GetCafeById(int id)
     {
         try
         {
-            var result = _cafeRepository.GetCafeById(id);
+            var result = await _cafeRepository.GetCafeById(id);
             if (result == null) return NotFound(new { message = "Cafe not found." });
             return Ok(new {data = result, message = "Cafe retrieved successfully."});
 
@@ -50,11 +50,11 @@ public class CafeController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<Cafe> AddCafe(Cafe cafe)
+    public async Task<ActionResult<Cafe>> AddCafe(Cafe cafe)
     {
         try
         {
-            var result = _cafeRepository.AddCafe(cafe);
+            var result = await _cafeRepository.AddCafe(cafe);
             return Ok(new { message = "Cafe created successfully", data = result });
         }
         catch (Exception e)
@@ -65,11 +65,11 @@ public class CafeController : ControllerBase
     }
     
     [HttpPost("Comment")]
-    public ActionResult<Cafe> AddComment(CommentRequest request)
+    public async Task <ActionResult<Cafe>> AddComment(CommentRequest request)
     {
         try
         {
-            var result = _cafeRepository.AddComment(request);
+            var result = await _cafeRepository.AddComment(request);
             return Ok(new { message = "Comment submitted.", data = result });
         }
         catch (Exception e)
@@ -80,11 +80,11 @@ public class CafeController : ControllerBase
     }
     
     [HttpPatch]
-    public ActionResult<Cafe> EditCafe(Cafe cafe)
+    public async Task<ActionResult<Cafe>> EditCafe(Cafe cafe)
     {
         try
         {
-            var result = _cafeRepository.EditCafe(cafe);
+            var result = await _cafeRepository.EditCafe(cafe);
             return Ok(new { message = "Cafe modified successfully", data = result });
         }
         catch (Exception e)
@@ -95,11 +95,11 @@ public class CafeController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public ActionResult<Cafe> DeleteCafe(int id)
+    public async Task<ActionResult<Cafe>> DeleteCafe(int id)
     {
         try
         {
-            _cafeRepository.DeleteCafe(id);
+            await _cafeRepository.DeleteCafe(id);
             return Ok(new { message = "Cafe deleted successfully" });
         }
         catch (Exception e)

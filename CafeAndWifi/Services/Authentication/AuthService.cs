@@ -51,6 +51,64 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task<TokenConfirmResponse> GenerateEmailConfirmationToken(string email)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return new TokenConfirmResponse(user.Id, token);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Failed to generate email confirmation key.");
+        }
+    }
+
+    public async Task<IdentityResult> ConfirmEmail(EmailConfirmationRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null)
+        {
+            throw new Exception("Invalid user id.");
+        }
+        
+        return await _userManager.ConfirmEmailAsync(user, request.Token);
+    }
+
+    public async Task<IdentityResult> ResetPassword(ResetPasswordRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null)
+        {
+            throw new Exception("Invalid user id.");
+        }
+        
+        return await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+    }
+
+    public async Task<TokenConfirmResponse> GeneratePasswordConfiramtionToken(string email)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                throw new Exception();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return new TokenConfirmResponse(user.Id, token);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Failed to generate key for password reset.");
+        }
+        
+    }
+
     public async Task<AuthResult> RegisterAsync(string email, string username, string password, string role)
     {
         var user = new IdentityUser { UserName = username, Email = email };
@@ -64,7 +122,40 @@ public class AuthService : IAuthService
         await _userManager.AddToRoleAsync(user, role);
         return new AuthResult(true, email, username, "");
     }
+    
+    public async Task<AuthResult> LoginAsync(string email, string password)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
 
+        if (user == null)
+        {
+            return InvalidEmail(email);
+        }
+        
+        if (!user.EmailConfirmed)
+        {
+            return NotConfirmed(email, user.UserName);
+        }
+
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
+        if (!isPasswordValid)
+        {
+            return InvalidPassword(email, user.UserName);
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var accessToken = _tokenService.CreateToken(user, roles[0]);
+
+        return new AuthResult(true, user.Email, user.UserName, accessToken);
+    }
+
+    private static AuthResult InvalidEmail(string email)
+    {
+        var result = new AuthResult(false, email, "", "");
+        result.ErrorMessages.Add("Bad credentials", "Invalid email");
+        return result;
+    }
+    
     private static AuthResult FailedRegistration(IdentityResult result, string email, string username)
     {
         var authResult = new AuthResult(false, email, username, "");
@@ -76,39 +167,18 @@ public class AuthService : IAuthService
 
         return authResult;
     }
-    
-    public async Task<AuthResult> LoginAsync(string email, string password)
-    {
-        var managedUser = await _userManager.FindByEmailAsync(email);
-
-        if (managedUser == null)
-        {
-            return InvalidEmail(email);
-        }
-
-        var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, password);
-        if (!isPasswordValid)
-        {
-            return InvalidPassword(email, managedUser.UserName);
-        }
-
-        var roles = await _userManager.GetRolesAsync(managedUser);
-        var accessToken = _tokenService.CreateToken(managedUser, roles[0]);
-
-        return new AuthResult(true, managedUser.Email, managedUser.UserName, accessToken);
-    }
-
-    private static AuthResult InvalidEmail(string email)
-    {
-        var result = new AuthResult(false, email, "", "");
-        result.ErrorMessages.Add("Bad credentials", "Invalid email");
-        return result;
-    }
 
     private static AuthResult InvalidPassword(string email, string userName)
     {
         var result = new AuthResult(false, email, userName, "");
         result.ErrorMessages.Add("Bad credentials", "Invalid password");
+        return result;
+    }
+
+    private static AuthResult NotConfirmed(string email, string userName)
+    {
+        var result = new AuthResult(false, email, userName, "", 403);
+        result.ErrorMessages.Add("Bad request", "Email not confirmed");
         return result;
     }
     

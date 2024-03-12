@@ -5,7 +5,6 @@ using Azure;
 using CafeAndWifi.Model.AuthenticationModels;
 using CafeAndWifi.Services.Authentication;
 using CafeAndWifi.Services.EmailService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
@@ -18,14 +17,12 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authenticationService;
     private readonly IEmailSender _emailSender;
-    private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _configuration;
 
-    public AuthController(IAuthService authenticationService, IEmailSender emailSender, UserManager<IdentityUser> userManager, IConfiguration configuration)
+    public AuthController(IAuthService authenticationService, IEmailSender emailSender, IConfiguration configuration)
     {
         _authenticationService = authenticationService;
         _emailSender = emailSender;
-        _userManager = userManager;
         _configuration = configuration;
     }
 
@@ -70,7 +67,6 @@ public class AuthController : ControllerBase
         {
             var payload = await VerifyTokenWithGoogle(tokenRequest.Token);
             var authResult = await _authenticationService.GoogleLoginAsync(payload.Email, payload.Name, "User");
-            Console.WriteLine(authResult);
             return Ok(new { message = "Login successful.", data = new AuthResponse(authResult.Email, authResult.UserName, authResult.Token) });
         }
         catch (Exception e)
@@ -102,28 +98,31 @@ public class AuthController : ControllerBase
     [HttpPost("ConfirmEmail")]
     public async Task<IActionResult> ConfirmEmail([FromBody] EmailConfirmationRequest request)
     {
-        if (request.UserId == null || request.Token == null)
+        try
         {
-            return BadRequest(new {message = "Invalid credentials."});
-        }
+            if (request.UserId == null || request.Token == null)
+            {
+                return BadRequest(new {message = "Invalid credentials."});
+            }
 
-        var user = await _userManager.FindByIdAsync(request.UserId);
-        if (user == null)
+            var result = await _authenticationService.ConfirmEmail(request);
+            if (result.Succeeded)
+            {
+                return Ok(new {message = "Successfully confirmed."});
+            }
+        
+            return BadRequest(new {message = "Confirmation failed."});
+        }
+        catch (Exception e)
         {
-            return BadRequest(new {message = "Invalid user id."});
+            Console.WriteLine(e);
+            return BadRequest(new { message = "Confirmation failed." });
         }
         
-        var result = await _userManager.ConfirmEmailAsync(user, request.Token);
-        if (result.Succeeded)
-        {
-            return Ok(new {message = "Successfully confirmed."});
-        }
-        
-        return BadRequest(new {message = "Confirmation failed."});
     }
     
     [HttpGet("ResetPassword")]
-    public IActionResult ResetPassword(string userId, string token)
+    public async Task<IActionResult> ResetPassword(string userId, string token)
     {
         if (userId == null || token == null)
         {
@@ -156,14 +155,8 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { message = "Invalid reset link." });
         }
-
-        var user = await _userManager.FindByIdAsync(request.UserId);
-        if (user == null)
-        {
-            return BadRequest(new { message = "Invalid user." });
-        }
         
-        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+        var result = await _authenticationService.ResetPassword(request);
         if (result.Succeeded)
         {
             return Ok(new { message = "Password reset successful." });
@@ -180,20 +173,14 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Login failed, invalid email or password." });
         }
         
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null)
-        {
-            return BadRequest(new { message = "Email not found." });
-        }
-
-        if (!user.EmailConfirmed)
-        {
-            return StatusCode(403, new { message = "Activate your account." });
-        }
 
         var result = await _authenticationService.LoginAsync(request.Email, request.Password);
         if (!result.Success)
         {
+            if (result.StatusCode == 403)
+            {
+                return StatusCode(403, new { message = "Activate your account." });
+            }
             AddErrors(result);
             return BadRequest(new { message = ExtractErrorMessageFromModelState(ModelState) });
         }
@@ -239,13 +226,12 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var response = await _authenticationService.GenerateEmailConfirmationToken(email);
             
             var frontendBaseUrl = _configuration["FrontendBaseUrl"];
-            var encodedToken = WebUtility.UrlEncode(token);
+            var encodedToken = WebUtility.UrlEncode(response.Token);
             
-            var confirmationLink = $"{frontendBaseUrl}/confirmEmail?userId={user.Id}&token={encodedToken}";
+            var confirmationLink = $"{frontendBaseUrl}/confirmEmail?userId={response.UserId}&token={encodedToken}";
             
             await _emailSender.SendEmailAsync(email, "Confirm your email",
                 $"Please confirm your email by clicking this link: <a href='{confirmationLink}'>link</a>");
@@ -266,16 +252,11 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-            {
-                throw new Exception();
-            }
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var response = await _authenticationService.GeneratePasswordConfiramtionToken(email);
             
             var frontendBaseUrl = _configuration["FrontendBaseUrl"];
-            var encodedToken = WebUtility.UrlEncode(token);
-            var resetLink = $"{frontendBaseUrl}/resetPassword?userId={user.Id}&token={encodedToken}";
+            var encodedToken = WebUtility.UrlEncode(response.Token);
+            var resetLink = $"{frontendBaseUrl}/resetPassword?userId={response.UserId}&token={encodedToken}";
 
             await _emailSender.SendEmailAsync(email, "Reset your password.",
                 $"Please reset your password by clicking this link: <a href='{resetLink}'>link</a>");
@@ -316,7 +297,6 @@ public class AuthController : ControllerBase
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(json);
             var payload = JsonConvert.DeserializeObject<GooglePayload>(json);
             return payload;
         }

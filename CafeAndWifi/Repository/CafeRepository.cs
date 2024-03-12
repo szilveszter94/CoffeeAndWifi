@@ -14,11 +14,11 @@ public class CafeRepository : ICafeRepository
         _context = context;
     }
     
-    public List<Cafe> GetCafes()
+    public async Task<List<Cafe>> GetCafes()
     {
         try
         {
-            return _context.Cafes.ToList();
+            return await _context.Cafes.ToListAsync();
         }
         catch (Exception e)
         {
@@ -27,13 +27,13 @@ public class CafeRepository : ICafeRepository
         }
     }
 
-    public Cafe? GetCafeById(int id)
+    public async Task<Cafe?> GetCafeById(int id)
     {
         try
         {
-            return _context.Cafes
+            return await _context.Cafes
                 .Include(cafe => cafe.Comments)
-                .FirstOrDefault(cafe => cafe.Id == id);
+                .FirstOrDefaultAsync(cafe => cafe.Id == id);
         }
         catch (Exception e)
         {
@@ -43,12 +43,12 @@ public class CafeRepository : ICafeRepository
         
     }
 
-    public Cafe AddCafe(Cafe cafe)
+    public async Task<Cafe> AddCafe(Cafe cafe)
     {
         try
         {
-            _context.Cafes.Add(cafe);
-            _context.SaveChanges();
+            await _context.Cafes.AddAsync(cafe);
+            await _context.SaveChangesAsync();
 
             return cafe;
         }
@@ -59,7 +59,7 @@ public class CafeRepository : ICafeRepository
         }
     }
 
-    public Comment AddComment(CommentRequest request)
+    public async Task<Comment> AddComment(CommentRequest request)
     {
         try
         {
@@ -67,8 +67,8 @@ public class CafeRepository : ICafeRepository
             {
                 AuthorId = request.AuthorId, CafeId = request.CafeId, Date = request.Date, Text = request.Text
             };
-            _context.Comments.Add(comment);
-            _context.SaveChanges();
+            await _context.Comments.AddAsync(comment);
+            await _context.SaveChangesAsync();
 
             return comment;
         }
@@ -79,11 +79,11 @@ public class CafeRepository : ICafeRepository
         }
     }
     
-    public Cafe EditCafe(Cafe updatedCafe)
+    public async Task<Cafe> EditCafe(Cafe updatedCafe)
     {
         try
         {
-            var existingCafe = _context.Cafes.FirstOrDefault(c => c.Id == updatedCafe.Id);
+            var existingCafe = await _context.Cafes.FirstOrDefaultAsync(c => c.Id == updatedCafe.Id);
 
             if (existingCafe == null)
             {
@@ -91,7 +91,7 @@ public class CafeRepository : ICafeRepository
             }
             
             _context.Entry(existingCafe).CurrentValues.SetValues(updatedCafe);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return existingCafe;
         }
@@ -107,11 +107,11 @@ public class CafeRepository : ICafeRepository
         }
     }
     
-    public void DeleteCafe(int id)
+    public async Task DeleteCafe(int id)
     {
         try
         {
-            var cafeToDelete = _context.Cafes.FirstOrDefault(c => c.Id == id);
+            var cafeToDelete = await _context.Cafes.FirstOrDefaultAsync(c => c.Id == id);
 
             if (cafeToDelete == null)
             {
@@ -119,7 +119,7 @@ public class CafeRepository : ICafeRepository
             }
             
             _context.Cafes.Remove(cafeToDelete);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
         catch (KeyNotFoundException e)
         {
