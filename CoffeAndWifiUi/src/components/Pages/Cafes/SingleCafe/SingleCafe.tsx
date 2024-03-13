@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Loading from "../../Loading/Loading";
 import {
   CafeProps,
+  CommentWithUserProps,
   SingleCafeResponse,
 } from "../../../../service/apiInterfaces";
 import { fetchData } from "../../../../service/apiService";
@@ -20,6 +21,7 @@ import SnackBar from "../../../Snackbar/Snackbar";
 const SingleCafe = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [cafe, setCafe] = useState<CafeProps | undefined>(undefined);
+  const [comments, setComments] = useState<CommentWithUserProps[] | undefined>(undefined);
   const { snackbar, setSnackbar } = useContext(SnackbarContext);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -44,9 +46,8 @@ const SingleCafe = () => {
       });
       if (response.ok) {
         const cafeResponse = response as SingleCafeResponse;
-        console.log(cafeResponse);
-        
-        setCafe(cafeResponse.data);
+        setComments(cafeResponse.data.comments);
+        setCafe(cafeResponse.data.cafe);
       } else {
         setSnackbar({
           open: true,
@@ -88,7 +89,7 @@ const SingleCafe = () => {
               />
             </div>
             {cafe && <CafeDetailsComponent cafe={cafe} />}
-            {cafe && <MoreCafeDetailsComponent cafe={cafe} setCafe={setCafe} />}
+            {cafe && <MoreCafeDetailsComponent cafe={cafe} comments={comments} setCafe={setCafe} />}
           </div>
         </div>
       </div>

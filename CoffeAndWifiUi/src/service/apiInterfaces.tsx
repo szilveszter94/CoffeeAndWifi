@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface RequestOptions {
   path: string;
@@ -6,10 +5,10 @@ export interface RequestOptions {
   body?: any;
 }
 
-export interface userPropos {
+export interface UserProps {
   email: string;
   id: string;
-  username: string;
+  userName: string;
 }
 
 export interface CommentProps {
@@ -18,7 +17,7 @@ export interface CommentProps {
   date: string;
   id: number;
   text: string;
-  user: userPropos;
+  user: UserProps;
 }
 
 export interface CafeProps {
@@ -56,9 +55,14 @@ export interface CommentResponse {
   status: number;
 }
 
+export interface CommentWithUserProps {
+  comment: CommentProps;
+  user: UserProps;
+}
+
 export interface SingleCafeResponse {
   ok: boolean;
-  data: CafeProps;
+  data: { cafe: CafeProps; comments: CommentWithUserProps[] };
   message: string;
 }
 
@@ -72,5 +76,5 @@ export interface LoginResponse {
 interface loginData {
   email: string;
   token: string;
-  username: string;
+  userName: string;
 }

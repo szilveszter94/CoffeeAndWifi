@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useContext } from "react";
-import { CafeProps } from "../../../../service/apiInterfaces";
+import { CafeProps, CommentWithUserProps } from "../../../../service/apiInterfaces";
 import { createGoogleMapFromLatLong } from "../../../../utils/helperFunctions";
 import CreateCommentComponent from "../Comments/CreateCommentComponent";
 import { UserContext } from "../../../../context/UserContext";
@@ -9,11 +9,12 @@ import { formatDate } from "../../../../utils/helperFunctions";
 
 export interface cafeStateProps {
   cafe: CafeProps;
+  comments: CommentWithUserProps[] | undefined;
   setCafe: Dispatch<SetStateAction<CafeProps | undefined>>;
 }
 
-const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
-  console.log(cafe.comments);
+const MoreCafeDetailsComponent = ({ cafe, comments, setCafe }: cafeStateProps) => {
+  console.log(comments);
   
   const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -39,10 +40,10 @@ const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
       </div>
       <div>
         <h2 className="my-4">Comments</h2>
-        {cafe.comments ? (
-          cafe.comments.map((comment) => (
-            <h5 key={comment.id}>
-              {comment.text} {formatDate(comment.date)}
+        {comments ? (
+          comments.map((comment) => (
+            <h5 key={comment.comment.id}>
+              {comment.comment.text} {formatDate(comment.comment.date)} {comment.user.userName}
             </h5>
           ))
         ) : (
