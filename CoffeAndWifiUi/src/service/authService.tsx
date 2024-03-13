@@ -5,7 +5,7 @@ interface userProps {
   email: string;
   role: string;
   userId: string;
-  userName: string;
+  username: string;
 }
 
 export interface authProps {

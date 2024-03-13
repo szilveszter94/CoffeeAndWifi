@@ -8,20 +8,26 @@ import {
   useState,
 } from "react";
 import { fetchData } from "../../../../service/apiService";
-import { CafeProps, CommentResponse } from "../../../../service/apiInterfaces";
+import {
+  CafeProps,
+  CommentResponse,
+  CommentWithUserProps,
+} from "../../../../service/apiInterfaces";
 import SnackBar from "../../../Snackbar/Snackbar";
 import { SnackbarContextValue } from "../../../../context/SnackbarContext";
 import { authProps } from "../../../../service/authService";
 
 export interface commentProps {
+  comments: CommentWithUserProps[] | undefined;
+  setComments: Dispatch<SetStateAction<CommentWithUserProps[] | undefined>>;
   cafe: CafeProps;
-  setCafe: Dispatch<SetStateAction<CafeProps | undefined>>;
   currentUser: authProps | null;
 }
 
 const CreateCommentComponent = ({
+  comments,
+  setComments,
   cafe,
-  setCafe,
   currentUser,
 }: commentProps) => {
   const [comment, setComment] = useState<string>("");
@@ -34,7 +40,6 @@ const CreateCommentComponent = ({
   });
 
   const handlePostComment = async (e: FormEvent<HTMLFormElement>) => {
-    
     e.preventDefault();
     try {
       const body = {
@@ -50,11 +55,18 @@ const CreateCommentComponent = ({
       });
       const commentResponse = response as CommentResponse;
       if (response.ok) {
-        const updatedCafe = {
-          ...cafe,
-          comments: [...cafe.comments, commentResponse.data],
+        const newComment = {
+          comment: commentResponse.data,
+          user: {
+            email: currentUser ? currentUser.data.email : "",
+            id: currentUser ? currentUser.data.userId : "",
+            userName: currentUser ? currentUser.data.username : "Anonymus",
+          },
         };
-        setCafe(updatedCafe);
+        const updatedComments = comments
+          ? [...comments, newComment]
+          : [newComment];
+        setComments(updatedComments);
         setLocalSnackbar({
           open: true,
           message: response.message,

@@ -89,7 +89,7 @@ const SingleCafe = () => {
               />
             </div>
             {cafe && <CafeDetailsComponent cafe={cafe} />}
-            {cafe && <MoreCafeDetailsComponent cafe={cafe} comments={comments} setCafe={setCafe} />}
+            {cafe && <MoreCafeDetailsComponent cafe={cafe} comments={comments} setComments={setComments} />}
           </div>
         </div>
       </div>

@@ -10,12 +10,11 @@ import { formatDate } from "../../../../utils/helperFunctions";
 export interface cafeStateProps {
   cafe: CafeProps;
   comments: CommentWithUserProps[] | undefined;
-  setCafe: Dispatch<SetStateAction<CafeProps | undefined>>;
+  setComments: Dispatch<SetStateAction<CommentWithUserProps[] | undefined>>;
 }
 
-const MoreCafeDetailsComponent = ({ cafe, comments, setCafe }: cafeStateProps) => {
-  console.log(comments);
-  
+const MoreCafeDetailsComponent = ({ cafe, comments, setComments }: cafeStateProps) => {
+
   const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -52,8 +51,9 @@ const MoreCafeDetailsComponent = ({ cafe, comments, setCafe }: cafeStateProps) =
       </div>
       {currentUser ? (
         <CreateCommentComponent
+          comments={comments}
+          setComments={setComments}
           cafe={cafe}
-          setCafe={setCafe}
           currentUser={currentUser}
         />
       ) : (
