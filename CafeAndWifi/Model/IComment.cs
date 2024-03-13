@@ -6,6 +6,6 @@ public interface IComment
     int CafeId { get; set; }
     string AuthorId { get; set; }
     string Text { get; set; }
-    Cafe Cafe { get; set; }
     DateTime Date { get; set; }
+    Cafe Cafe { get; set; }
 }

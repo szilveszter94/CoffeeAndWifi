@@ -100,7 +100,7 @@ void ConfigureSwagger()
 
 void AddDbContext()
 {
-    services.AddDbContext<UserContext.UsersContext>();
+    services.AddDbContext<UserContext>();
 }
 
 void AddAuthentication()
@@ -142,7 +142,7 @@ void AddIdentity()
             options.Password.RequireLowercase = false;
         })
         .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<UserContext.UsersContext>()
+        .AddEntityFrameworkStores<UserContext>()
         .AddDefaultTokenProviders();
 }
 

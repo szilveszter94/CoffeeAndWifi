@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CafeAndWifi.Migrations
 {
-    [DbContext(typeof(UserContext.UsersContext))]
-    [Migration("20240228232010_initialMigration")]
-    partial class initialMigration
+    [DbContext(typeof(UserContext))]
+    [Migration("20240313004101_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
