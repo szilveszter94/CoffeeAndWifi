@@ -29,14 +29,25 @@ public class CafeRepository : ICafeRepository
         }
     }
 
-    public async Task<Cafe?> GetCafeById(int id)
+    public async Task<CafeWithPopulatedUsers?> GetCafeById(int id)
     {
         try
         {
             var cafeWithComments = await _context.Cafes
                 .Include(cafe => cafe.Comments)
                 .FirstOrDefaultAsync(cafe => cafe.Id == id);
-            return cafeWithComments;
+            
+            var commentsWithUsers = new List<object>();
+            
+            foreach (var comment in cafeWithComments.Comments)
+            {
+                var userInfo = await _userContext.Users.FirstOrDefaultAsync(u => u.Id == comment.AuthorId);
+                var user = new User { Id = userInfo.Id, UserName = userInfo.UserName, Email = userInfo.Email };
+    
+                commentsWithUsers.Add(new {comment, user});
+            }
+            
+            return new CafeWithPopulatedUsers(cafeWithComments, commentsWithUsers);
         }
         catch (Exception e)
         {

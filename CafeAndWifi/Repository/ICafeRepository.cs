@@ -6,7 +6,7 @@ namespace CafeAndWifi.Repository;
 public interface ICafeRepository
 {
     Task<List<Cafe>> GetCafes();
-    Task<Cafe?> GetCafeById(int id);
+    Task<CafeWithPopulatedUsers?> GetCafeById(int id);
     Task<Cafe> AddCafe(Cafe cafe);
     Task<Comment> AddComment(CommentRequest request);
     Task<Cafe> EditCafe(Cafe cafe);

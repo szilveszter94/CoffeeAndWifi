@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CafeAndWifi.Migrations.Cafe
 {
     [DbContext(typeof(CafeContext))]
-    [Migration("20240313004111_initialCreate")]
+    [Migration("20240313214958_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
