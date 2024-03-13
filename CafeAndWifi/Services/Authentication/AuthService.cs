@@ -1,3 +1,4 @@
+using CafeAndWifi.Model;
 using CafeAndWifi.Model.AuthenticationModels;
 using CafeAndWifi.Services.Token;
 using Microsoft.AspNetCore.Identity;

@@ -8,10 +8,12 @@ namespace CafeAndWifi.Repository;
 public class CafeRepository : ICafeRepository
 {
     private readonly CafeContext _context;
+    private readonly UserContext _userContext;
 
-    public CafeRepository(CafeContext context)
+    public CafeRepository(CafeContext context, UserContext userContext)
     {
         _context = context;
+        _userContext = userContext;
     }
     
     public async Task<List<Cafe>> GetCafes()
@@ -31,16 +33,16 @@ public class CafeRepository : ICafeRepository
     {
         try
         {
-            return await _context.Cafes
+            var cafeWithComments = await _context.Cafes
                 .Include(cafe => cafe.Comments)
                 .FirstOrDefaultAsync(cafe => cafe.Id == id);
+            return cafeWithComments;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw new Exception("Cannot get cafe, an error occured.");
-        }
-        
+        }   
     }
 
     public async Task<Cafe> AddCafe(Cafe cafe)
