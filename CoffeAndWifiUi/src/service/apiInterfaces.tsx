@@ -6,12 +6,19 @@ export interface RequestOptions {
   body?: any;
 }
 
+export interface userPropos {
+  email: string;
+  id: string;
+  username: string;
+}
+
 export interface CommentProps {
   authorId: number;
   cafeId: number;
   date: string;
   id: number;
   text: string;
+  user: userPropos;
 }
 
 export interface CafeProps {

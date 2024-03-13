@@ -34,6 +34,7 @@ const CreateCommentComponent = ({
   });
 
   const handlePostComment = async (e: FormEvent<HTMLFormElement>) => {
+    
     e.preventDefault();
     try {
       const body = {

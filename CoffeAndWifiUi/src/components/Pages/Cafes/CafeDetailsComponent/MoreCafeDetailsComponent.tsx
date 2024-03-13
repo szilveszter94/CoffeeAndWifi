@@ -5,6 +5,7 @@ import CreateCommentComponent from "../Comments/CreateCommentComponent";
 import { UserContext } from "../../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import "./CafeDetails.scss";
+import { formatDate } from "../../../../utils/helperFunctions";
 
 export interface cafeStateProps {
   cafe: CafeProps;
@@ -12,6 +13,8 @@ export interface cafeStateProps {
 }
 
 const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
+  console.log(cafe.comments);
+  
   const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -39,7 +42,7 @@ const MoreCafeDetailsComponent = ({ cafe, setCafe }: cafeStateProps) => {
         {cafe.comments ? (
           cafe.comments.map((comment) => (
             <h5 key={comment.id}>
-              {comment.text} {comment.date}
+              {comment.text} {formatDate(comment.date)}
             </h5>
           ))
         ) : (
