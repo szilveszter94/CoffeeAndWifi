@@ -1,11 +1,15 @@
 import { Dispatch, SetStateAction, useContext } from "react";
-import { CafeProps, CommentWithUserProps } from "../../../../service/apiInterfaces";
+import {
+  CafeProps,
+  CommentWithUserProps,
+} from "../../../../service/apiInterfaces";
 import { createGoogleMapFromLatLong } from "../../../../utils/helperFunctions";
 import CreateCommentComponent from "../Comments/CreateCommentComponent";
 import { UserContext } from "../../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import "./CafeDetails.scss";
-import { formatDate } from "../../../../utils/helperFunctions";
+import SecondaryButton from "../../../Buttons/Secondary/SecondaryButton";
+import CommentComponent from "../Comments/CommentComponent";
 
 export interface cafeStateProps {
   cafe: CafeProps;
@@ -13,8 +17,11 @@ export interface cafeStateProps {
   setComments: Dispatch<SetStateAction<CommentWithUserProps[] | undefined>>;
 }
 
-const MoreCafeDetailsComponent = ({ cafe, comments, setComments }: cafeStateProps) => {
-
+const MoreCafeDetailsComponent = ({
+  cafe,
+  comments,
+  setComments,
+}: cafeStateProps) => {
   const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -37,18 +44,6 @@ const MoreCafeDetailsComponent = ({ cafe, comments, setComments }: cafeStateProp
           ></iframe>
         </div>
       </div>
-      <div>
-        <h2 className="my-4">Comments</h2>
-        {comments ? (
-          comments.map((comment) => (
-            <h5 key={comment.comment.id}>
-              {comment.comment.text} {formatDate(comment.comment.date)} {comment.user.userName}
-            </h5>
-          ))
-        ) : (
-          <h5>No comments.</h5>
-        )}
-      </div>
       {currentUser ? (
         <CreateCommentComponent
           comments={comments}
@@ -57,11 +52,32 @@ const MoreCafeDetailsComponent = ({ cafe, comments, setComments }: cafeStateProp
           currentUser={currentUser}
         />
       ) : (
-        <div>
+        <div className="my-5">
           <h2>Login first to write a comment.</h2>
-          <button onClick={handleNavigateToLogin}>Login</button>
+          <SecondaryButton
+            type="button"
+            onClick={handleNavigateToLogin}
+            text="Login"
+            className="fs-4"
+          />
         </div>
       )}
+      <div className="mb-5">
+        <h2 className="my-4">Comments</h2>
+        <div className="row d-flex justify-content-center">
+          {comments ? (
+            comments.map((comment) => (
+              <CommentComponent
+                key={comment.comment.id}
+                comment={comment.comment}
+                user={comment.user}
+              />
+            ))
+          ) : (
+            <h5>No comments.</h5>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

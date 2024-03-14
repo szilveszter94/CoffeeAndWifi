@@ -1,0 +1,23 @@
+@import "../../../../Style/variables";
+
+.comment-container {
+    font-family: $tercier-font;
+    border-radius: 10px;
+    background-color: $secondary-bg-color-transparent;
+}
+
+.comment-author {
+    font-style: oblique;
+    font-size: medium;
+    font-weight: 600;
+}
+
+.comment-date {
+    color: $accent-color;
+    font-size: small;
+}
+
+.comment-text {
+    font-size: large;
+    font-weight: 600;
+}
