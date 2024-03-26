@@ -8,8 +8,12 @@ using CafeAndWifi.Services.Token;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+Env.Load();
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,7 +67,6 @@ void AddServices()
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddTransient<IEmailSender, EmailSender>();
-        services.AddDbContext<CafeContext>();
         services.AddScoped<ICafeRepository, CafeRepository>();
     }
     
@@ -100,7 +103,12 @@ void ConfigureSwagger()
 
 void AddDbContext()
 {
-    services.AddDbContext<UserContext>();
+    builder.Services.AddDbContext<CafeAndWifiContext>(options =>
+    {
+        Console.WriteLine("Trying to connect to database...");
+        options.UseSqlServer(connectionString);
+        Console.WriteLine("Connected to database!");
+    });
 }
 
 void AddAuthentication()
@@ -142,7 +150,7 @@ void AddIdentity()
             options.Password.RequireLowercase = false;
         })
         .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<UserContext>()
+        .AddEntityFrameworkStores<CafeAndWifiContext>()
         .AddDefaultTokenProviders();
 }
 
