@@ -31,7 +31,7 @@
 ### Project Name: CafeAndWifi
 
 ### Description:
-- CafeAndWifi is a user-friendly mobile application designed to help users find the perfect cafes for work, study, or simply enjoying a good cup of coffee. The app focuses on providing valuable insights into cafes based on factors like comfort, availability of WiFi, conducive work environment, and the quality of coffee.
+- CafeAndWifi is a user-friendly web application designed to help users find the perfect cafes for work, study, or simply enjoying a good cup of coffee. The app focuses on providing valuable insights into cafes based on factors like comfort, availability of WiFi, conducive work environment, and the quality of coffee.
 
 ### Key Features:
 
