@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeAndWifi", "CafeAndWifi\CafeAndWifi.csproj", "{8C96F7AF-9BDD-40D6-994F-A1F554C245F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeAndWifiTest", "CafeAndWifiTest\CafeAndWifiTest.csproj", "{44F3DB53-02E0-44EF-AD58-C417B79E9BB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{8C96F7AF-9BDD-40D6-994F-A1F554C245F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C96F7AF-9BDD-40D6-994F-A1F554C245F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C96F7AF-9BDD-40D6-994F-A1F554C245F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44F3DB53-02E0-44EF-AD58-C417B79E9BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F3DB53-02E0-44EF-AD58-C417B79E9BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44F3DB53-02E0-44EF-AD58-C417B79E9BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44F3DB53-02E0-44EF-AD58-C417B79E9BB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
