@@ -20,4 +20,32 @@ public class Cafe : ICafe
     public bool CanTakeCalls { get; set; }
     public bool CanPayWithCard { get; set; }
     public ICollection<Comment> Comments  { get; set; }
+    
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+        
+        Cafe other = (Cafe)obj;
+
+        return Id == other.Id &&
+               Name == other.Name &&
+               Latitude == other.Latitude &&
+               Longitude == other.Longitude &&
+               ImgUrl == other.ImgUrl &&
+               Country == other.Country &&
+               City == other.City &&
+               Address == other.Address &&
+               Description == other.Description &&
+               Seats == other.Seats &&
+               CoffeePrice == other.CoffeePrice &&
+               Rating == other.Rating &&
+               HasToilet == other.HasToilet &&
+               HasWifi == other.HasWifi &&
+               HasSockets == other.HasSockets &&
+               CanTakeCalls == other.CanTakeCalls &&
+               CanPayWithCard == other.CanPayWithCard;
+    }
 }
