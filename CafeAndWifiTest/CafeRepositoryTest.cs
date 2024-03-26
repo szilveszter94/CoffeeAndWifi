@@ -103,7 +103,7 @@ public class CafeRepositoryTest
     [Test]
     public async Task CreateCommentSuccess()
     {
-        var commentToCreate = new CommentRequest(1, "1", "Sample comment 1", new DateTime(2024, 03, 02));
+        var commentToCreate = new CommentRequest(4, "1", "Sample comment 1", new DateTime(2024, 03, 02));
         var result = await _repository.AddComment(commentToCreate);
         var convertedResult = new CommentRequest(result.CafeId, result.AuthorId, result.Text, result.Date);
         Assert.That(convertedResult, Is.EqualTo(commentToCreate));
@@ -141,7 +141,7 @@ public class CafeRepositoryTest
     public async Task UpdateCafeSuccess()
     {
         var cafeToUpdate = new Cafe{
-            Id = 1,
+            Id = 2,
             Name = "sample156",
             Latitude = 71,
             Longitude = 81,
@@ -196,7 +196,7 @@ public class CafeRepositoryTest
     [Test]
     public async Task DeleteCafeSuccess()
     {
-        var cafeId = 1;
+        var cafeId = 4;
         
         Exception exception = null;
         try
