@@ -7,13 +7,11 @@ namespace CafeAndWifi.Repository;
 
 public class CafeRepository : ICafeRepository
 {
-    private readonly CafeContext _context;
-    private readonly UserContext _userContext;
+    private readonly CafeAndWifiContext _context;
 
-    public CafeRepository(CafeContext context, UserContext userContext)
+    public CafeRepository(CafeAndWifiContext context)
     {
         _context = context;
-        _userContext = userContext;
     }
     
     public async Task<List<Cafe>> GetCafes()
@@ -29,7 +27,7 @@ public class CafeRepository : ICafeRepository
         }
     }
 
-    public async Task<CafeWithPopulatedUsers?> GetCafeById(int id)
+    public async Task<CafeWithComments?> GetCafeById(int id)
     {
         try
         {
@@ -37,17 +35,17 @@ public class CafeRepository : ICafeRepository
                 .Include(cafe => cafe.Comments)
                 .FirstOrDefaultAsync(cafe => cafe.Id == id);
             
-            var commentsWithUsers = new List<object>();
+            var commentsWithUsers = new List<CommentWithUser>();
             
             foreach (var comment in cafeWithComments.Comments)
             {
-                var userInfo = await _userContext.Users.FirstOrDefaultAsync(u => u.Id == comment.AuthorId);
+                var userInfo = await _context.Users.FirstOrDefaultAsync(u => u.Id == comment.AuthorId);
                 var user = new User { Id = userInfo.Id, UserName = userInfo.UserName, Email = userInfo.Email };
     
-                commentsWithUsers.Add(new {comment, user});
+                commentsWithUsers.Add(new CommentWithUser() {Comment = comment, User = user});
             }
             
-            return new CafeWithPopulatedUsers(cafeWithComments, commentsWithUsers);
+            return new CafeWithComments(cafeWithComments, commentsWithUsers);
         }
         catch (Exception e)
         {
