@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Loading from "../../Loading/Loading";
 import {
   CafeProps,
+  CommentWithUserProps,
   SingleCafeResponse,
 } from "../../../../service/apiInterfaces";
 import { fetchData } from "../../../../service/apiService";
@@ -14,12 +15,26 @@ import Footer from "../../../Section/Footer/Footer";
 import "./SingleCafe.scss";
 import ButtonWithIcon from "../../../Buttons/ButtonWithIcon/ButtonWithIcon";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { SnackbarContext } from "../../../../context/SnackbarContext";
+import SnackBar from "../../../Snackbar/Snackbar";
 
 const SingleCafe = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [cafe, setCafe] = useState<CafeProps | undefined>(undefined);
+  const [comments, setComments] = useState<CommentWithUserProps[] | undefined>(undefined);
+  const { snackbar, setSnackbar } = useContext(SnackbarContext);
   const navigate = useNavigate();
   const { id } = useParams();
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSnackbar({
+        open: false,
+        message: "",
+        type: undefined,
+      });
+    }, 6000);
+  }, [setSnackbar]);
 
   useEffect(() => {
     const fetchCafes = async () => {
@@ -31,9 +46,14 @@ const SingleCafe = () => {
       });
       if (response.ok) {
         const cafeResponse = response as SingleCafeResponse;
-        setCafe(cafeResponse.data);
+        setComments(cafeResponse.data.comments);
+        setCafe(cafeResponse.data.cafe);
       } else {
-        alert(response.message);
+        setSnackbar({
+          open: true,
+          message: response.message,
+          type: "error",
+        });
       }
       setLoading(false);
     };
@@ -50,6 +70,10 @@ const SingleCafe = () => {
 
   return (
     <div className="single-cafe-container vh-100">
+      <SnackBar
+        {...snackbar}
+        setOpen={() => setSnackbar({ ...snackbar, open: false })}
+      />
       <Navbar />
       <div className="single-cafe-content">
         <div className="container">
@@ -65,7 +89,7 @@ const SingleCafe = () => {
               />
             </div>
             {cafe && <CafeDetailsComponent cafe={cafe} />}
-            {cafe && <MoreCafeDetailsComponent cafe={cafe} />}
+            {cafe && <MoreCafeDetailsComponent cafe={cafe} comments={comments} setComments={setComments} />}
           </div>
         </div>
       </div>

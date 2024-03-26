@@ -1,12 +1,14 @@
 using CafeAndWifi.Model;
+using CafeAndWifi.Model.AuthenticationModels;
 
 namespace CafeAndWifi.Repository;
 
 public interface ICafeRepository
 {
-    List<Cafe> GetCafes();
-    Cafe? GetCafeById(int id);
-    Cafe AddCafe(Cafe cafe);
-    Cafe EditCafe(Cafe cafe);
-    void DeleteCafe(int id);
+    Task<List<Cafe>> GetCafes();
+    Task<CafeWithComments?> GetCafeById(int id);
+    Task<Cafe> AddCafe(Cafe cafe);
+    Task<Comment> AddComment(CommentRequest request);
+    Task<Cafe> EditCafe(Cafe cafe);
+    Task DeleteCafe(int id);
 }

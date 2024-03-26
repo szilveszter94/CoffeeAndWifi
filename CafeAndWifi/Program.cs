@@ -1,14 +1,29 @@
-
+using System.Text;
+using System.Text.Json.Serialization;
+using CafeAndWifi.Context;
 using CafeAndWifi.Repository;
+using CafeAndWifi.Services.Authentication;
+using CafeAndWifi.Services.EmailService;
+using CafeAndWifi.Services.Token;
+using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+Env.Load();
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var services = builder.Services;
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ICafeRepository, CafeRepository>();
+AddServices();
+ConfigureSwagger();
+AddDbContext();
+AddAuthentication();
+AddIdentity();
 
 var app = builder.Build();
 
@@ -36,4 +51,159 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+AddRoles();
+AddAdmin();
+
 app.Run();
+
+void AddServices()
+    {
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
+        services.AddEndpointsApiExplorer();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddTransient<IEmailSender, EmailSender>();
+        services.AddScoped<ICafeRepository, CafeRepository>();
+    }
+    
+void ConfigureSwagger()
+{
+    services.AddSwaggerGen(option =>
+    {
+        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "Bearer"
+        });
+        option.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type=ReferenceType.SecurityScheme,
+                        Id="Bearer"
+                    }
+                },
+                new string[]{}
+            }
+        });
+    });
+}
+
+void AddDbContext()
+{
+    builder.Services.AddDbContext<CafeAndWifiContext>(options =>
+    {
+        Console.WriteLine("Trying to connect to database...");
+        options.UseSqlServer(connectionString);
+        Console.WriteLine("Connected to database!");
+    });
+}
+
+void AddAuthentication()
+{
+    Env.Load();
+    var signInKey = Environment.GetEnvironmentVariable("ISSUER_SIGN_IN_KEY");
+    services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ClockSkew = TimeSpan.Zero,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "apiWithAuthBackend",
+                ValidAudience = "apiWithAuthBackend",
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(signInKey)
+                ),
+            };
+        });
+}
+
+void AddIdentity()
+{
+    services
+        .AddIdentityCore<IdentityUser>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+            options.User.AllowedUserNameCharacters = string.Empty;
+            options.User.RequireUniqueEmail = true;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 6;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+        })
+        .AddRoles<IdentityRole>()
+        .AddEntityFrameworkStores<CafeAndWifiContext>()
+        .AddDefaultTokenProviders();
+}
+
+void AddRoles()
+{
+    using var scope = app.Services.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var tAdmin = CreateAdminRole(roleManager);
+    tAdmin.Wait();
+
+    var tUser = CreateUserRole(roleManager);
+    tUser.Wait();
+}
+
+async Task CreateAdminRole(RoleManager<IdentityRole> roleManager)
+{
+    Env.Load();
+    var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE");
+    await roleManager.CreateAsync(new IdentityRole(adminRole));
+}
+
+async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
+{
+    Env.Load();
+    var userRole = Environment.GetEnvironmentVariable("USER_ROLE");
+    await roleManager.CreateAsync(new IdentityRole(userRole));
+}
+
+void AddAdmin()
+{
+    var tAdmin = CreateAdminIfNotExists();
+    tAdmin.Wait();
+}
+
+async Task CreateAdminIfNotExists()
+{
+    Env.Load();
+    var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+    var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME");
+    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+    var adminRole = Environment.GetEnvironmentVariable("ADMIN_ROLE");
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var adminInDb = await userManager.FindByEmailAsync(adminEmail);
+    if (adminInDb == null)
+    {
+        var admin = new IdentityUser { UserName = adminUsername, Email = adminEmail, EmailConfirmed = true };
+        var adminCreated = await userManager.CreateAsync(admin, adminPassword);
+
+        if (adminCreated.Succeeded)
+        {
+            await userManager.AddToRoleAsync(admin, adminRole);
+        }
+    }
+}

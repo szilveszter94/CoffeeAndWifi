@@ -1,127 +1,110 @@
+using CafeAndWifi.Context;
 using CafeAndWifi.Model;
+using CafeAndWifi.Model.AuthenticationModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace CafeAndWifi.Repository;
 
 public class CafeRepository : ICafeRepository
 {
-    private List<Cafe> _cafes;
+    private readonly CafeAndWifiContext _context;
 
-    public CafeRepository()
+    public CafeRepository(CafeAndWifiContext context)
     {
-        _cafes = new List<Cafe>
-        {
-            new()
-            {
-                Id = 1,
-                Name = "Coffee House",
-                Latitude = 40.7128,
-                Longitude = -74.0060,
-                ImgUrl = "https://garzoncafe.hu/wp-content/uploads/2022/03/GARZON_inside.png",
-                Country = "United States",
-                City = "New York",
-                Address = "123 Main Street",
-                Description = "A cozy coffee house offering a variety of espresso drinks and pastries.",
-                Seats = 20,
-                CoffeePrice = 3.50m,
-                Rating = 3.5,
-                HasToilet = true,
-                HasWifi = true,
-                HasSockets = true,
-                CanTakeCalls = true,
-                CanPayWithCard = true,
-                Comments = new List<Comment>
-                {
-                    new()
-                    {
-                        Id = 1, CafeId = 1, AuthorId = 1, Date = DateTime.Now, Text = "Great coffee and atmosphere!"
-                    },
-                    new() { Id = 2, CafeId = 1, AuthorId = 1, Date = DateTime.Now, Text = "Love the pastries here." }
-                }
-            },
-            new()
-            {
-                Id = 2,
-                Name = "Latte Lounge",
-                Latitude = 34.0522,
-                Longitude = -118.2437,
-                ImgUrl = "https://media-cdn.tripadvisor.com/media/photo-s/10/e5/73/92/photo1jpg.jpg",
-                Country = "United States",
-                City = "Los Angeles",
-                Address = "456 Oak Avenue",
-                Description = "A trendy lounge specializing in artisanal lattes and light bites.",
-                Seats = 30,
-                CoffeePrice = 4.00m,
-                Rating = 4.5,
-                HasToilet = false,
-                HasWifi = false,
-                HasSockets = false,
-                CanTakeCalls = false,
-                CanPayWithCard = false,
-                Comments = new List<Comment>
-                {
-                    new() { Id = 3, CafeId = 2, AuthorId = 1, Date = DateTime.Now, Text = "Amazing latte art!" },
-                    new()
-                    {
-                        Id = 4, CafeId = 2, AuthorId = 1, Date = DateTime.Now, Text = "Great place to work remotely."
-                    }
-                }
-            }
-        };
+        _context = context;
     }
     
-    public List<Cafe> GetCafes()
+    public async Task<List<Cafe>> GetCafes()
     {
         try
         {
-            return _cafes;
+            return await _context.Cafes.ToListAsync();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw new Exception("Cannot get cafes, an error occured.");
+            throw new Exception("Cannot get cafes, an error occurred.");
         }
     }
 
-    public Cafe? GetCafeById(int id)
+    public async Task<CafeWithComments?> GetCafeById(int id)
     {
         try
         {
-            return _cafes.FirstOrDefault(cafe => cafe.Id == id);
+            var cafeWithComments = await _context.Cafes
+                .Include(cafe => cafe.Comments)
+                .FirstOrDefaultAsync(cafe => cafe.Id == id);
+            
+            var commentsWithUsers = new List<CommentWithUser>();
+            
+            foreach (var comment in cafeWithComments.Comments)
+            {
+                var userInfo = await _context.Users.FirstOrDefaultAsync(u => u.Id == comment.AuthorId);
+                var user = new User { Id = userInfo.Id, UserName = userInfo.UserName, Email = userInfo.Email };
+    
+                commentsWithUsers.Add(new CommentWithUser() {Comment = comment, User = user});
+            }
+            
+            return new CafeWithComments(cafeWithComments, commentsWithUsers);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw new Exception("Cannot get cafe, an error occured.");
-        }
-        
+        }   
     }
 
-    public Cafe AddCafe(Cafe cafe)
+    public async Task<Cafe> AddCafe(Cafe cafe)
     {
         try
         {
-            _cafes.Add(cafe);
+            await _context.Cafes.AddAsync(cafe);
+            await _context.SaveChangesAsync();
+
             return cafe;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw new Exception("Cafe not created. An error occured.");
+            throw new Exception("Cafe not created. An error occurred.");
         }
     }
-    
-    public Cafe EditCafe(Cafe cafe)
+
+    public async Task<Comment> AddComment(CommentRequest request)
     {
         try
         {
-            int accountId = _cafes.FindIndex(acc => acc.Id == cafe.Id);
-            if (accountId < 0)
+            var comment = new Comment
+            {
+                AuthorId = request.AuthorId, CafeId = request.CafeId, Date = request.Date, Text = request.Text
+            };
+            await _context.Comments.AddAsync(comment);
+            await _context.SaveChangesAsync();
+
+            return comment;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Comment not created. An error occurred.");
+        }
+    }
+    
+    public async Task<Cafe> EditCafe(Cafe updatedCafe)
+    {
+        try
+        {
+            var existingCafe = await _context.Cafes.FirstOrDefaultAsync(c => c.Id == updatedCafe.Id);
+
+            if (existingCafe == null)
             {
                 throw new KeyNotFoundException("Failed to update. Cafe not found.");
             }
+            
+            _context.Entry(existingCafe).CurrentValues.SetValues(updatedCafe);
+            await _context.SaveChangesAsync();
 
-            _cafes[accountId] = cafe;
-            return cafe;
+            return existingCafe;
         }
         catch (KeyNotFoundException e)
         {
@@ -131,20 +114,23 @@ public class CafeRepository : ICafeRepository
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw new Exception("An unexpected error occured. Cafe not updated.");
+            throw new Exception("An unexpected error occurred. Cafe not updated.");
         }
     }
     
-    public void DeleteCafe(int id)
+    public async Task DeleteCafe(int id)
     {
         try
         {
-            Cafe? cafe = _cafes.Find(acc => acc.Id == id);
-            if (cafe == null)
+            var cafeToDelete = await _context.Cafes.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cafeToDelete == null)
             {
                 throw new KeyNotFoundException("Failed to delete. Cafe not found.");
             }
-            _cafes.Remove(cafe);
+            
+            _context.Cafes.Remove(cafeToDelete);
+            await _context.SaveChangesAsync();
         }
         catch (KeyNotFoundException e)
         {
@@ -154,7 +140,7 @@ public class CafeRepository : ICafeRepository
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw new Exception("An unexpected error occured during delete.");
+            throw new Exception("An unexpected error occurred during delete.");
         }
     }
 }
