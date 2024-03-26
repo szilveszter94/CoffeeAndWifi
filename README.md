@@ -54,7 +54,8 @@ CafeAndWifi stands out by focusing specifically on the needs of individuals look
 ### Tech Stack:
 
 - Frontend: React
-- Backend: Asp.NET
+  - Style: Bootstrap, SASS
+- Backend: ASP.NET
 - Database: SqlServer
 - API Integration: Google Maps API, Social Media APIs (Google auth)
 
